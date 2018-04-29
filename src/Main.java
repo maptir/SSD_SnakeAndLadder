@@ -3,8 +3,6 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import snakeandladder.Game;
-
 public class Main {
 	private static final int FRAME_WIDTH = 700;
 	private static final int FRAME_HIGHT = 840;
