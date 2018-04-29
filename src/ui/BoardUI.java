@@ -20,7 +20,7 @@ import snakeandladder.Player;
 import snakeandladder.BoardView;
 import square.BackwardSquare;
 
-public class BoardUI implements BoardView {
+public class BoardUI extends JPanel implements BoardView {
 	private JPanel board;
 	private JButton rollButton;
 	private JTextArea textArea;
@@ -33,8 +33,8 @@ public class BoardUI implements BoardView {
 
 	private Game game;
 
-	public BoardUI() {
-		this.game = new Game(4, this);
+	public BoardUI(int p) {
+		this.game = new Game(p, this);
 		initialize();
 	}
 
@@ -170,7 +170,7 @@ public class BoardUI implements BoardView {
 				} else {
 					curPlayer.setBounds(curPlayer.getX() - 64, curPlayer.getY(), 51, 44);
 				}
-//				Thread.sleep(50);
+				Thread.sleep(50);
 				playerPos++;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
