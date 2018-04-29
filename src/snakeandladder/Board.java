@@ -22,8 +22,7 @@ public class Board {
 	}
 
 	public void initSpecialSquare() {
-		// squares[2] = new LadderSquare(squares[3].getNumber(), 38);
-		// squares[16] = new SnakeSquare(squares[16].getNumber(), 6);
+
 	}
 
 	public void addPiece(Piece piece, int pos) {

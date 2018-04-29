@@ -166,7 +166,6 @@ public class BoardUI implements BoardView {
 				rollButton.setEnabled(false);
 				if (i < steps) {
 					JLabel curPlayer = players[game.currentPlayerIndex()];
-					System.out.println(playerPos);
 					if (playerPos % 10 == 0) {
 						curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() - 64);
 					} else if ((playerPos / 10) % 2 == 0) {
