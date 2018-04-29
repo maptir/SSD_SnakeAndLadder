@@ -7,11 +7,15 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class BoardUI {
 	private JPanel board;
 	private JButton rollButton;
+	private JLabel dice;
+	private JTextField textfield;
 	
 	public BoardUI() {
 		initialize();
@@ -36,8 +40,17 @@ public class BoardUI {
 		
 		ImageIcon img = new ImageIcon(getClass().getResource("/res/roll.png"));
 		rollButton = new JButton(img);
-		rollButton.setBounds(269,697,144,111);
+		rollButton.setBounds(526,697,144,111);
 		board.add(rollButton);
+		
+		ImageIcon img2 = new ImageIcon(getClass().getResource("/res/dice1.png"));
+		dice = new JLabel(img2);
+		dice.setBounds(395,697,111,111);
+		board.add(dice);
+		
+		textfield = new JTextField();
+		textfield.setBounds(30,697,350,111);
+		board.add(textfield);
 		
 	}
 	
