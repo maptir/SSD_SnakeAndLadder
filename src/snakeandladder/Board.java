@@ -22,37 +22,37 @@ public class Board {
 	}
 
 	public void initSpecialSquare() {
-		squares[2] = new LadderSquare(squares[3].getNumber(), 38);
-		squares[7] = new LadderSquare(squares[7].getNumber(), 14);
-		squares[8] = new LadderSquare(squares[8].getNumber(), 31);
-		squares[15] = new LadderSquare(squares[15].getNumber(), 26);
-		squares[21] = new LadderSquare(squares[21].getNumber(), 42);
-		squares[28] = new LadderSquare(squares[28].getNumber(), 84);
-		squares[36] = new LadderSquare(squares[36].getNumber(), 44);
-		squares[51] = new LadderSquare(squares[51].getNumber(), 67);
-		squares[71] = new LadderSquare(squares[71].getNumber(), 91);
-		squares[78] = new LadderSquare(squares[78].getNumber(), 98);
-		squares[87] = new LadderSquare(squares[87].getNumber(), 94);
-		squares[16] = new SnakeSquare(squares[16].getNumber(), 6);
-		squares[49] = new SnakeSquare(squares[49].getNumber(), 11);
-		squares[62] = new SnakeSquare(squares[62].getNumber(), 19);
-		squares[46] = new SnakeSquare(squares[46].getNumber(), 25);
-		squares[64] = new SnakeSquare(squares[64].getNumber(), 60);
-		squares[74] = new SnakeSquare(squares[74].getNumber(), 53);
-		squares[89] = new SnakeSquare(squares[89].getNumber(), 68);
-		squares[95] = new SnakeSquare(squares[95].getNumber(), 75);
-		squares[92] = new SnakeSquare(squares[92].getNumber(), 88);
-		squares[99] = new SnakeSquare(squares[99].getNumber(), 80);
-		squares[17] = new FreezeSquare(squares[17].getNumber());
-		squares[56] = new FreezeSquare(squares[56].getNumber());
-		squares[61] = new FreezeSquare(squares[61].getNumber());
-		squares[70] = new FreezeSquare(squares[70].getNumber());
-		squares[97] = new FreezeSquare(squares[97].getNumber());
-		squares[9] = new BackwardSquare(squares[9].getNumber());
-		squares[20] = new BackwardSquare(squares[20].getNumber());
-		squares[45] = new BackwardSquare(squares[45].getNumber());
-		squares[77] = new BackwardSquare(squares[77].getNumber());
-		squares[86] = new BackwardSquare(squares[86].getNumber());
+		squares[2] = new LadderSquare(squares[2].getNumber(), 38);
+		squares[7] = new LadderSquare(squares[6].getNumber(), 14);
+		squares[8] = new LadderSquare(squares[7].getNumber(), 31);
+		squares[15] = new LadderSquare(squares[14].getNumber(), 26);
+		squares[21] = new LadderSquare(squares[20].getNumber(), 42);
+		squares[28] = new LadderSquare(squares[27].getNumber(), 84);
+		squares[36] = new LadderSquare(squares[35].getNumber(), 44);
+		squares[51] = new LadderSquare(squares[50].getNumber(), 67);
+		squares[71] = new LadderSquare(squares[70].getNumber(), 91);
+		squares[78] = new LadderSquare(squares[77].getNumber(), 98);
+		squares[87] = new LadderSquare(squares[86].getNumber(), 94);
+		squares[16] = new SnakeSquare(squares[15].getNumber(), 6);
+		squares[49] = new SnakeSquare(squares[48].getNumber(), 11);
+		squares[62] = new SnakeSquare(squares[63].getNumber(), 19);
+		squares[46] = new SnakeSquare(squares[45].getNumber(), 25);
+		squares[64] = new SnakeSquare(squares[63].getNumber(), 60);
+		squares[74] = new SnakeSquare(squares[73].getNumber(), 53);
+		squares[89] = new SnakeSquare(squares[88].getNumber(), 68);
+		squares[95] = new SnakeSquare(squares[94].getNumber(), 75);
+		squares[92] = new SnakeSquare(squares[91].getNumber(), 88);
+		squares[99] = new SnakeSquare(squares[98].getNumber(), 80);
+		squares[17] = new FreezeSquare(squares[16].getNumber());
+		squares[56] = new FreezeSquare(squares[55].getNumber());
+		squares[61] = new FreezeSquare(squares[60].getNumber());
+		squares[70] = new FreezeSquare(squares[69].getNumber());
+		squares[97] = new FreezeSquare(squares[96].getNumber());
+		squares[9] = new BackwardSquare(squares[8].getNumber());
+		squares[20] = new BackwardSquare(squares[21].getNumber());
+		squares[45] = new BackwardSquare(squares[44].getNumber());
+		squares[77] = new BackwardSquare(squares[76].getNumber());
+		squares[86] = new BackwardSquare(squares[85].getNumber());
 	}
 
 	public void addPiece(Piece piece, int pos) {
