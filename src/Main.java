@@ -3,6 +3,8 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import snakeandladder.Game;
+
 public class Main {
 	private static final int FRAME_WIDTH = 700;
 	private static final int FRAME_HIGHT = 840;
@@ -20,6 +22,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		initialize(new ui.BoardUI().getPanel());
+		Game game = new Game(4);
+		initialize(new ui.BoardUI(game).getPanel());
 	}
 }
