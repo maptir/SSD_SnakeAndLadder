@@ -45,7 +45,7 @@ public class ConsoleUI {
 	}
 
 	public void restart(Game game) {
-		game = new Game(game.getNumPlayers());
+//		game = new Game(game.getNumPlayers());
 		start(game);
 	}
 
@@ -59,7 +59,7 @@ public class ConsoleUI {
 
 	public static void main(String[] args) {
 		ConsoleUI ui = new ConsoleUI();
-		Game game = new Game(2);
-		ui.start(game);
+//		Game game = new Game(2);
+//		ui.start(game);
 	}
 }

@@ -11,22 +11,25 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 
 import snakeandladder.Game;
 import snakeandladder.Player;
+import snakeandladder.BoardView;
+import square.BackwardSquare;
 
-public class BoardUI {
+public class BoardUI implements BoardView {
 	private JPanel board;
 	private JButton rollButton;
+	private JTextArea textArea;
 	private JLabel dice;
-	private JTextField textfield;
+	private ImageIcon[] diceImages;
 	private JLabel[] players;
 
 	private Game game;
 
-	public BoardUI(Game game) {
-		this.game = game;
+	public BoardUI() {
+		this.game = new Game(4, this);
 		initialize();
 	}
 
@@ -50,18 +53,22 @@ public class BoardUI {
 		ImageIcon img = new ImageIcon(getClass().getResource("/res/roll.png"));
 		rollButton = new JButton(img);
 		rollButton.setBounds(526, 697, 144, 111);
+		rollButton.setBorderPainted(false);
 		rollButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Player currentPlayer = game.currentPlayer();
-				System.out.println("Current Player is " + currentPlayer);
+				textArea.append("Current Player is " + currentPlayer + "\n");
+
 				if (currentPlayer.isFreeze()) {
 					System.out.println(currentPlayer.getName() + " is FREEZE can't walk for 1 round.");
 					currentPlayer.setFreeze(false);
 					return;
 				}
+
 				int face = game.currentPlayerRollDice();
 				System.out.println("The die is roll FACE = " + face);
+				dice.setIcon(diceImages[face - 1]);
 				game.currentPlayerMove(face);
 				System.out.println(currentPlayer + " is at " + game.currentPlayerPosition());
 				if (game.currentPlayerWin()) {
@@ -74,14 +81,18 @@ public class BoardUI {
 		});
 		board.add(rollButton);
 
-		ImageIcon img2 = new ImageIcon(getClass().getResource("/res/dice1.png"));
-		dice = new JLabel(img2);
+		dice = new JLabel();
+		diceImages = new ImageIcon[6];
+		for (int i = 0; i < 6; i++) {
+			diceImages[i] = new ImageIcon(getClass().getResource("/res/dice" + (i + 1) + ".png"));
+		}
 		dice.setBounds(395, 697, 111, 111);
 		board.add(dice);
 
-		textfield = new JTextField();
-		textfield.setBounds(30, 697, 350, 111);
-		board.add(textfield);
+		textArea = new JTextArea();
+		textArea.setBounds(30, 697, 350, 111);
+		textArea.setEditable(false);
+		board.add(textArea);
 
 		players = new JLabel[game.getNumPlayers()];
 		for (int i = 0; i < players.length; i++) {
@@ -94,6 +105,11 @@ public class BoardUI {
 
 	public JPanel getPanel() {
 		return board;
+	}
+
+	@Override
+	public void movePlayer(int steps) {
+		players[game.currentPlayerIndex()].setBounds(500, 30, 127, 189);
 	}
 
 }

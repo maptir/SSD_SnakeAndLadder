@@ -15,11 +15,11 @@ public class Game {
 
 	private List<Rolled> histories;
 
-	public Game(int numPlayer) {
+	public Game(int numPlayer, BoardView bView) {
 		currentPlayerIndex = 0;
 		players = new Player[numPlayer];
 		die = new Die();
-		board = new Board();
+		board = new Board(bView);
 		ended = false;
 		histories = new ArrayList<>();
 
@@ -39,6 +39,10 @@ public class Game {
 
 	public Player currentPlayer() {
 		return players[currentPlayerIndex];
+	}
+
+	public int currentPlayerIndex() {
+		return currentPlayerIndex;
 	}
 
 	public void switchPlayer() {

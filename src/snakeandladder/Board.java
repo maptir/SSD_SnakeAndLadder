@@ -9,9 +9,11 @@ import square.Square;
 public class Board {
 	public static final int SIZE = 64;
 	private Square[] squares;
+	private BoardView bView;
 
-	public Board() {
+	public Board(BoardView bView) {
 		this.squares = new Square[SIZE];
+		this.bView = bView;
 		for (int i = 0; i < squares.length; i++)
 			squares[i] = new Square(i);
 
@@ -37,6 +39,7 @@ public class Board {
 		int newPos = pos + steps;
 		if (newPos >= squares.length)
 			newPos = 2 * (squares.length - 1) - newPos;
+		bView.movePlayer(newPos);
 		addPiece(piece, newPos);
 
 		if (squares[newPos] instanceof LadderSquare) {
