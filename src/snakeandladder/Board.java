@@ -22,8 +22,8 @@ public class Board {
 	}
 
 	public void initSpecialSquare() {
-		squares[2] = new LadderSquare(squares[3].getNumber(), 38);
-		squares[16] = new SnakeSquare(squares[16].getNumber(), 6);
+		// squares[2] = new LadderSquare(squares[3].getNumber(), 38);
+		// squares[16] = new SnakeSquare(squares[16].getNumber(), 6);
 	}
 
 	public void addPiece(Piece piece, int pos) {
@@ -32,14 +32,14 @@ public class Board {
 
 	public void movePiece(Player player, Piece piece, int steps) {
 		int pos = getPiecePos(piece);
-		squares[pos].removePiece(piece);
 
 		if (squares[pos] instanceof BackwardSquare)
 			steps *= -1;
 		int newPos = pos + steps;
 		if (newPos >= squares.length)
 			newPos = 2 * (squares.length - 1) - newPos;
-		bView.movePlayer(newPos);
+		bView.movePlayer(steps);
+		squares[pos].removePiece(piece);
 		addPiece(piece, newPos);
 
 		if (squares[newPos] instanceof LadderSquare) {
