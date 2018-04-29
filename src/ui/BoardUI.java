@@ -94,8 +94,8 @@ public class BoardUI implements BoardView {
 		textArea.setEditable(false);
 		board.add(textArea);
 
-		int x = 0 ;
-		int y = 0 ;
+		int x = 0;
+		int y = 0;
 		players = new JLabel[game.getNumPlayers()];
 		for (int i = 0; i < players.length; i++) {
 			ImageIcon playerImage = new ImageIcon(getClass().getResource("/res/player" + (i + 1) + ".png"));
@@ -106,13 +106,14 @@ public class BoardUI implements BoardView {
 			if (i == 2 || i == 4) {
 				x = 18;
 			}
-			if( i== 0 || i == 2) {
+			if (i == 0 || i == 2) {
 				y = 630;
-			}if( i== 1 || i == 3) {
+			}
+			if (i == 1 || i == 3) {
 				y = 600;
 			}
 			players[i].setBounds(x, y, 51, 44);
-				board.add(players[i]);
+			board.add(players[i]);
 		}
 	}
 
@@ -122,7 +123,24 @@ public class BoardUI implements BoardView {
 
 	@Override
 	public void movePlayer(int steps) {
-		players[game.currentPlayerIndex()].setBounds(500, 30, 127, 189);
+		int playerPos = game.currentPlayerPosition() + 1;
+		for (int i = 0; i < steps; i++) {
+			try {
+				JLabel curPlayer = players[game.currentPlayerIndex()];
+				System.out.println(playerPos);
+				if (playerPos % 10 == 0) {
+					curPlayer.setBounds(curPlayer.getX(), curPlayer.getY() - 64, 51, 44);
+				} else if ((playerPos / 10) % 2 == 0) {
+					curPlayer.setBounds(curPlayer.getX() + 64, curPlayer.getY(), 51, 44);
+				} else {
+					curPlayer.setBounds(curPlayer.getX() - 64, curPlayer.getY(), 51, 44);
+				}
+//				Thread.sleep(50);
+				playerPos++;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
