@@ -1,7 +1,6 @@
 package ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,11 +13,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.Timer;
 
 import snakeandladder.Game;
 import snakeandladder.Player;
 import snakeandladder.BoardView;
-import square.BackwardSquare;
 
 public class BoardUI extends JPanel implements BoardView {
 	private JPanel board;
@@ -26,12 +25,13 @@ public class BoardUI extends JPanel implements BoardView {
 	private JTextArea textArea;
 	private JLabel dice;
 	private ImageIcon[] diceImages;
-	private JButton restartButton,replayButton;
+	private JButton restartButton, replayButton;
 	private JPanel endLabel;
 
 	private JLabel[] players;
 
 	private Game game;
+	private Timer timer;
 
 	public BoardUI(int p) {
 		this.game = new Game(p, this);
@@ -54,35 +54,34 @@ public class BoardUI extends JPanel implements BoardView {
 		};
 		board.setBounds(0, 0, 700, 840);
 		board.setLayout(null);
-		
-		endLabel = new JPanel(){
-			  protected void paintComponent(Graphics g) {
-				    super.paintComponent(g);  
-				    g.drawRect(0,0,501,281);  
-				    g.setColor(new Color(170,242,255));  
-				    g.fillRect(0,0,500,280);  
-				  }
+
+		endLabel = new JPanel() {
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.drawRect(0, 0, 501, 281);
+				g.setColor(new Color(170, 242, 255));
+				g.fillRect(0, 0, 500, 280);
+			}
 		};
 		endLabel.setBounds(80, 200, 500, 280);
-		
+
 		ImageIcon image = new ImageIcon(getClass().getResource("/res/replay.png"));
 		replayButton = new JButton(image);
 		replayButton.setOpaque(false);
 		replayButton.setContentAreaFilled(false);
 		replayButton.setBorderPainted(false);
-		replayButton.setBounds(70,310,256,110);
+		replayButton.setBounds(70, 310, 256, 110);
 		endLabel.add(replayButton);
-		
+
 		ImageIcon image1 = new ImageIcon(getClass().getResource("/res/restart.png"));
 		restartButton = new JButton(image1);
 		restartButton.setOpaque(false);
 		restartButton.setContentAreaFilled(false);
 		restartButton.setBorderPainted(false);
-		restartButton.setBounds(350,410,270,110);
+		restartButton.setBounds(350, 410, 270, 110);
 		endLabel.add(restartButton);
 		endLabel.setVisible(false);
 		board.add(endLabel);
-		
 
 		ImageIcon img = new ImageIcon(getClass().getResource("/res/roll.png"));
 		rollButton = new JButton(img);
@@ -158,24 +157,36 @@ public class BoardUI extends JPanel implements BoardView {
 
 	@Override
 	public void movePlayer(int steps) {
-		int playerPos = game.currentPlayerPosition() + 1;
-		for (int i = 0; i < steps; i++) {
-			try {
-				JLabel curPlayer = players[game.currentPlayerIndex()];
-				System.out.println(playerPos);
-				if (playerPos % 10 == 0) {
-					curPlayer.setBounds(curPlayer.getX(), curPlayer.getY() - 64, 51, 44);
-				} else if ((playerPos / 10) % 2 == 0) {
-					curPlayer.setBounds(curPlayer.getX() + 64, curPlayer.getY(), 51, 44);
+		timer = new Timer(50, new ActionListener() {
+			int playerPos = game.currentPlayerPosition() + 1;
+			int i = 0;
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				rollButton.setEnabled(false);
+				if (i < steps) {
+					JLabel curPlayer = players[game.currentPlayerIndex()];
+					System.out.println(playerPos);
+					if (playerPos % 10 == 0) {
+						curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() - 64);
+					} else if ((playerPos / 10) % 2 == 0) {
+						curPlayer.setLocation(curPlayer.getX() + 64, curPlayer.getY());
+					} else {
+						curPlayer.setLocation(curPlayer.getX() - 64, curPlayer.getY());
+					}
+					playerPos++;
+					i++;
 				} else {
-					curPlayer.setBounds(curPlayer.getX() - 64, curPlayer.getY(), 51, 44);
+					rollButton.setEnabled(true);
+					timer.stop();
 				}
 				Thread.sleep(50);
 				playerPos++;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		});
+		timer.start();
 	}
 
 }
