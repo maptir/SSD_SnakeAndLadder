@@ -180,10 +180,6 @@ public class BoardUI extends JPanel implements BoardView {
 					rollButton.setEnabled(true);
 					timer.stop();
 				}
-				Thread.sleep(50);
-				playerPos++;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		});
 		timer.start();
