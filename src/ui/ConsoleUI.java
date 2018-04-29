@@ -38,6 +38,7 @@ public class ConsoleUI {
 			break;
 		case 2:
 			replay(game);
+			break;
 		default:
 			break;
 		}
