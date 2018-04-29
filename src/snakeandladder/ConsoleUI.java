@@ -25,7 +25,7 @@ public class ConsoleUI {
 
 	public static void main(String[] args) {
 		ConsoleUI ui = new ConsoleUI();
-		Game game = new Game();
+		Game game = new Game(4);
 		ui.start(game);
 	}
 }
