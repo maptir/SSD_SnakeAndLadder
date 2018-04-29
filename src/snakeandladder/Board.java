@@ -1,5 +1,6 @@
 package snakeandladder;
 
+import square.BackwardSquare;
 import square.FreezeSquare;
 import square.LadderSquare;
 import square.SnakeSquare;
@@ -14,43 +15,46 @@ public class Board {
 		for (int i = 0; i < squares.length; i++)
 			squares[i] = new Square(i);
 
+		initSpecialSquare();
+		squares[squares.length - 1].setGoal(true);
+	}
+
+	public void initSpecialSquare() {
 		squares[2] = new LadderSquare(squares[3].getNumber(), 38);
 		squares[16] = new SnakeSquare(squares[16].getNumber(), 6);
-
-		squares[squares.length - 1].setGoal(true);
-	} 
+	}
 
 	public void addPiece(Piece piece, int pos) {
 		squares[pos].addPiece(piece);
 	}
 
-	public void movePiece(Piece piece, int steps) {
+	public void movePiece(Player player, Piece piece, int steps) {
 		int pos = getPiecePos(piece);
 		squares[pos].removePiece(piece);
+
+		if (squares[pos] instanceof BackwardSquare)
+			steps *= -1;
 		int newPos = pos + steps;
 		if (newPos >= squares.length)
 			newPos = 2 * (squares.length - 1) - newPos;
 		addPiece(piece, newPos);
-		
+
 		if (squares[newPos] instanceof LadderSquare) {
 			LadderSquare ladderSquare = (LadderSquare) squares[newPos];
 			steps = ladderSquare.goTo() - newPos;
 			System.out.println("Found a ladder !! GOTO -> " + newPos);
-			movePiece(piece, steps);
+			movePiece(player, piece, steps);
 		}
-		
-		if(squares[newPos] instanceof SnakeSquare) {
+
+		if (squares[newPos] instanceof SnakeSquare) {
 			SnakeSquare snakeSquare = (SnakeSquare) squares[newPos];
 			steps = newPos - snakeSquare.goTo();
 			System.out.println("Found a snake !! GOTO -> " + newPos);
-			movePiece(piece, steps);
+			movePiece(player, piece, steps);
 		}
-		
-		if(squares[newPos] instanceof FreezeSquare) {
-			FreezeSquare freezeSquare = (FreezeSquare) squares[newPos];
-			steps = 0;
-			System.out.println("Found a trap !! skips one turn");
-			
+
+		if (squares[newPos] instanceof FreezeSquare) {
+			player.setFreeze(true);
 		}
 	}
 

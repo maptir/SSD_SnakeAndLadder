@@ -3,9 +3,9 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class MainFrame {
-	private final static int FRAME_WIDTH = 700;
-	private final static int FRAME_HIGHT = 840;
+public class Main {
+	private static final int FRAME_WIDTH = 700;
+	private static final int FRAME_HIGHT = 840;
 	private static JFrame frame;
 
 	private static void initialize(JPanel panel) {
@@ -17,7 +17,6 @@ public class MainFrame {
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-
 	}
 
 	public static void main(String[] args) {

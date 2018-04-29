@@ -12,6 +12,11 @@ public class ConsoleUI {
 		while (!game.isEnd()) {
 			Player currentPlayer = game.currentPlayer();
 			System.out.println("Current Player is " + currentPlayer);
+			if (currentPlayer.isFreeze()) {
+				System.out.println(currentPlayer.getName() + " is FREEZE can't walk for 1 round.");
+				currentPlayer.setFreeze(false);
+				continue;
+			}
 			int face = game.currentPlayerRollDice();
 			System.out.println("The die is roll FACE = " + face);
 			game.currentPlayerMove(face);
@@ -21,7 +26,7 @@ public class ConsoleUI {
 				game.end();
 			} else {
 				game.switchPlayer();
-//				System.out.println("Please [ENTER] to roll dice.");
+				// System.out.println("Please [ENTER] to roll dice.");
 			}
 			sc.nextLine();
 		}
