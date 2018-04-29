@@ -20,6 +20,6 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		initialize(new ui.BoardUI().getPanel());
+		initialize(new ui.IndexUI().getPanel());
 	}
 }
