@@ -19,7 +19,7 @@ import snakeandladder.Game;
 import snakeandladder.Player;
 import snakeandladder.BoardView;
 
-public class BoardUI implements BoardView {
+public class BoardUI extends JPanel implements BoardView {
 	private JPanel board;
 	private JButton rollButton;
 	private JTextArea textArea;
@@ -33,8 +33,8 @@ public class BoardUI implements BoardView {
 	private Game game;
 	private Timer timer;
 
-	public BoardUI() {
-		this.game = new Game(4, this);
+	public BoardUI(int p) {
+		this.game = new Game(p, this);
 		initialize();
 	}
 
