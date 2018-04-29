@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class ConsoleUI {
 	public void start(Game game) {
+		Scanner sc = new Scanner(System.in);
 		while (!game.isEnd()) {
 			Player currentPlayer = game.currentPlayer();
 			System.out.println("Current Player is " + currentPlayer);
@@ -18,9 +19,22 @@ public class ConsoleUI {
 				game.switchPlayer();
 				System.out.println("Please [ENTER] to roll dice.");
 			}
-			Scanner sc = new Scanner(System.in);
 			sc.nextLine();
 		}
+		System.out.println("--- Game is END ---");
+		System.out.println("RESTART(1) or CLOSE(2): ");
+		switch (sc.nextInt()) {
+		case 1:
+			restart(game);
+			break;
+		default:
+			break;
+		}
+	}
+
+	public void restart(Game game) {
+		game = new Game(game.getNumPlayers());
+		start(game);
 	}
 
 	public static void main(String[] args) {

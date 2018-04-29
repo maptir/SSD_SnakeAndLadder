@@ -56,4 +56,8 @@ public class Game {
 	public boolean currentPlayerWin() {
 		return board.pieceIsAtGoal(currentPlayer().getPiece());
 	}
+
+	public int getNumPlayers() {
+		return players.length;
+	}
 }
