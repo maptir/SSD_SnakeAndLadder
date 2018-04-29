@@ -1,4 +1,4 @@
-package snakeandladder;
+package square;
 
 public class LadderSquare extends Square {
 

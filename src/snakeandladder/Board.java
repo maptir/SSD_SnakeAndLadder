@@ -1,5 +1,8 @@
 package snakeandladder;
 
+import square.LadderSquare;
+import square.Square;
+
 public class Board {
 	public static final int SIZE = 64;
 	private Square[] squares;

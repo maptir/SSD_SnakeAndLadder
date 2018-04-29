@@ -1,7 +1,9 @@
-package snakeandladder;
+package square;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import snakeandladder.Piece;
 
 public class Square {
 	private List<Piece> pieces;
