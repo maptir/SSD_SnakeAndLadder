@@ -1,31 +1,25 @@
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import snakeandladder.Game;
-import ui.ConsoleUI;
-import ui.GameUI;
+import java.awt.Dimension;
 
-public class Main extends Application {
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		try {
-			Parent root = (Parent) FXMLLoader.load(getClass().getResource("/ui/GameUI.fxml"));
-			Scene scene = new Scene(root);
-			primaryStage.setTitle("Choose Game Mode");
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+public class Main {
+	private static final int FRAME_WIDTH = 700;
+	private static final int FRAME_HIGHT = 840;
+	private static JFrame frame;
+
+	private static void initialize(JPanel panel) {
+		System.out.println("start");
+		frame = new JFrame("Snake and Ladder");
+		frame.getContentPane().add(panel);
+		frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HIGHT));
+		// frame.setLocationRelativeTo(null);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 	}
 
 	public static void main(String[] args) {
-		// ConsoleUI ui = new ConsoleUI();
-		Game game = new Game(2);
-
-		launch(args);
+		initialize(new ui.BoardUI().getPanel());
 	}
 }

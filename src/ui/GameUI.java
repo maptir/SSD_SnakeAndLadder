@@ -11,7 +11,7 @@ public class GameUI extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
-			Parent root = (Parent) FXMLLoader.load(getClass().getResource("GameUI.fxml"));
+			Parent root = (Parent) FXMLLoader.load(getClass().getResource("/ui/GameModeUI.fxml"));
 			Scene scene = new Scene(root);
 			primaryStage.setTitle("Choose Game Mode");
 			primaryStage.setScene(scene);

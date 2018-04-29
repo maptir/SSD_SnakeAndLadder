@@ -46,7 +46,7 @@ public class Game {
 	}
 
 	public void currentPlayerMove(int steps) {
-		this.board.movePiece(currentPlayer().getPiece(), steps);
+		this.board.movePiece(currentPlayer(), currentPlayer().getPiece(), steps);
 		histories.add(new Rolled(currentPlayer(), steps, currentPlayerPosition()));
 	}
 
