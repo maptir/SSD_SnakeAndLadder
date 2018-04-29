@@ -2,6 +2,8 @@ package snakeandladder;
 
 import java.util.Scanner;
 
+import replay.Rolled;
+
 public class ConsoleUI {
 	public void start(Game game) {
 		Scanner sc = new Scanner(System.in);
@@ -17,16 +19,18 @@ public class ConsoleUI {
 				game.end();
 			} else {
 				game.switchPlayer();
-				System.out.println("Please [ENTER] to roll dice.");
+//				System.out.println("Please [ENTER] to roll dice.");
 			}
 			sc.nextLine();
 		}
 		System.out.println("--- Game is END ---");
-		System.out.println("RESTART(1) or CLOSE(2): ");
+		System.out.println("RESTART(1), REPLAY(2) or CLOSE(else): ");
 		switch (sc.nextInt()) {
 		case 1:
 			restart(game);
 			break;
+		case 2:
+			replay(game);
 		default:
 			break;
 		}
@@ -37,9 +41,17 @@ public class ConsoleUI {
 		start(game);
 	}
 
+	public void replay(Game game) {
+		for (Rolled rolled : game.getHistories()) {
+			System.out.println("Current Player is " + rolled.getPlayer());
+			System.out.println("The die is roll FACE = " + rolled.getRolled());
+			System.out.println(rolled.getPlayer() + " is at " + rolled.getCurrentPos());
+		}
+	}
+
 	public static void main(String[] args) {
 		ConsoleUI ui = new ConsoleUI();
-		Game game = new Game(4);
+		Game game = new Game(2);
 		ui.start(game);
 	}
 }

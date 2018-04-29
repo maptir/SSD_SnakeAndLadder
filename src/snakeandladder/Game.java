@@ -1,5 +1,10 @@
 package snakeandladder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import replay.Rolled;
+
 public class Game {
 	private Player[] players;
 	private Die die;
@@ -8,12 +13,15 @@ public class Game {
 	private int currentPlayerIndex;
 	private boolean ended;
 
+	private List<Rolled> histories;
+
 	public Game(int numPlayer) {
 		currentPlayerIndex = 0;
 		players = new Player[numPlayer];
 		die = new Die();
 		board = new Board();
 		ended = false;
+		histories = new ArrayList<>();
 
 		for (int i = 0; i < players.length; i++) {
 			players[i] = new Player("P" + (i + 1));
@@ -39,6 +47,7 @@ public class Game {
 
 	public void currentPlayerMove(int steps) {
 		this.board.movePiece(currentPlayer().getPiece(), steps);
+		histories.add(new Rolled(currentPlayer(), steps, currentPlayerPosition()));
 	}
 
 	public String currentPlayerName() {
@@ -59,5 +68,9 @@ public class Game {
 
 	public int getNumPlayers() {
 		return players.length;
+	}
+
+	public List<Rolled> getHistories() {
+		return histories;
 	}
 }
