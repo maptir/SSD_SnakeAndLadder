@@ -1,5 +1,7 @@
 package ui;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,6 +26,9 @@ public class BoardUI implements BoardView {
 	private JTextArea textArea;
 	private JLabel dice;
 	private ImageIcon[] diceImages;
+	private JButton restartButton,replayButton;
+	private JPanel endLabel;
+
 	private JLabel[] players;
 
 	private Game game;
@@ -49,6 +54,35 @@ public class BoardUI implements BoardView {
 		};
 		board.setBounds(0, 0, 700, 840);
 		board.setLayout(null);
+		
+		endLabel = new JPanel(){
+			  protected void paintComponent(Graphics g) {
+				    super.paintComponent(g);  
+				    g.drawRect(0,0,501,281);  
+				    g.setColor(new Color(170,242,255));  
+				    g.fillRect(0,0,500,280);  
+				  }
+		};
+		endLabel.setBounds(80, 200, 500, 280);
+		
+		ImageIcon image = new ImageIcon(getClass().getResource("/res/replay.png"));
+		replayButton = new JButton(image);
+		replayButton.setOpaque(false);
+		replayButton.setContentAreaFilled(false);
+		replayButton.setBorderPainted(false);
+		replayButton.setBounds(70,310,256,110);
+		endLabel.add(replayButton);
+		
+		ImageIcon image1 = new ImageIcon(getClass().getResource("/res/restart.png"));
+		restartButton = new JButton(image1);
+		restartButton.setOpaque(false);
+		restartButton.setContentAreaFilled(false);
+		restartButton.setBorderPainted(false);
+		restartButton.setBounds(350,410,270,110);
+		endLabel.add(restartButton);
+		endLabel.setVisible(false);
+		board.add(endLabel);
+		
 
 		ImageIcon img = new ImageIcon(getClass().getResource("/res/roll.png"));
 		rollButton = new JButton(img);
@@ -73,6 +107,7 @@ public class BoardUI implements BoardView {
 				System.out.println(currentPlayer + " is at " + game.currentPlayerPosition());
 				if (game.currentPlayerWin()) {
 					System.out.println("Player " + currentPlayer.getName() + " WINS!");
+					endLabel.setVisible(true);
 					game.end();
 				} else {
 					game.switchPlayer();
