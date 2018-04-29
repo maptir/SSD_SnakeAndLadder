@@ -1,6 +1,8 @@
 package snakeandladder;
 
+import square.FreezeSquare;
 import square.LadderSquare;
+import square.SnakeSquare;
 import square.Square;
 
 public class Board {
@@ -12,10 +14,11 @@ public class Board {
 		for (int i = 0; i < squares.length; i++)
 			squares[i] = new Square(i);
 
-		squares[3] = new LadderSquare(squares[3].getNumber(), 63);
+		squares[2] = new LadderSquare(squares[3].getNumber(), 38);
+		squares[16] = new SnakeSquare(squares[16].getNumber(), 6);
 
 		squares[squares.length - 1].setGoal(true);
-	}
+	} 
 
 	public void addPiece(Piece piece, int pos) {
 		squares[pos].addPiece(piece);
@@ -34,6 +37,20 @@ public class Board {
 			steps = ladderSquare.goTo() - newPos;
 			System.out.println("Found a ladder !! GOTO -> " + newPos);
 			movePiece(piece, steps);
+		}
+		
+		if(squares[newPos] instanceof SnakeSquare) {
+			SnakeSquare snakeSquare = (SnakeSquare) squares[newPos];
+			steps = newPos - snakeSquare.goTo();
+			System.out.println("Found a snake !! GOTO -> " + newPos);
+			movePiece(piece, steps);
+		}
+		
+		if(squares[newPos] instanceof FreezeSquare) {
+			FreezeSquare freezeSquare = (FreezeSquare) squares[newPos];
+			steps = 0;
+			System.out.println("Found a trap !! skips one turn");
+			
 		}
 	}
 
