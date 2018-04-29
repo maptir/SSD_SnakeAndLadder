@@ -1,8 +1,10 @@
-package snakeandladder;
+package ui;
 
 import java.util.Scanner;
 
 import replay.Rolled;
+import snakeandladder.Game;
+import snakeandladder.Player;
 
 public class ConsoleUI {
 	public void start(Game game) {

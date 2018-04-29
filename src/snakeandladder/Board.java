@@ -8,6 +8,9 @@ public class Board {
 		this.squares = new Square[SIZE];
 		for (int i = 0; i < squares.length; i++)
 			squares[i] = new Square(i);
+
+		squares[3] = new LadderSquare(squares[3].getNumber(), 63);
+
 		squares[squares.length - 1].setGoal(true);
 	}
 
@@ -22,6 +25,13 @@ public class Board {
 		if (newPos >= squares.length)
 			newPos = 2 * (squares.length - 1) - newPos;
 		addPiece(piece, newPos);
+		
+		if (squares[newPos] instanceof LadderSquare) {
+			LadderSquare ladderSquare = (LadderSquare) squares[newPos];
+			steps = ladderSquare.goTo() - newPos;
+			System.out.println("Found a ladder !! GOTO -> " + newPos);
+			movePiece(piece, steps);
+		}
 	}
 
 	public int getPiecePos(Piece piece) {
