@@ -22,11 +22,10 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-<<<<<<< HEAD
-		initialize(new ui.IndexUI().getPanel());
-=======
+
 		Game game = new Game(4);
 		initialize(new ui.BoardUI(game).getPanel());
->>>>>>> 46f04135a32493318a9e5ec1b0fad68dd581f39c
+		//initialize(new ui.IndexUI().getPanel());
+
 	}
 }

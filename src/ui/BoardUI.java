@@ -83,12 +83,25 @@ public class BoardUI {
 		textfield.setBounds(30, 697, 350, 111);
 		board.add(textfield);
 
+		int x = 0 ;
+		int y = 0 ;
 		players = new JLabel[game.getNumPlayers()];
 		for (int i = 0; i < players.length; i++) {
 			ImageIcon playerImage = new ImageIcon(getClass().getResource("/res/player" + (i + 1) + ".png"));
 			players[i] = new JLabel(playerImage);
-			players[i].setBounds(30, 500, 127, 189);
-			board.add(players[i]);
+			if (i == 0 || i == 1) {
+				x = 50;
+			}
+			if (i == 2 || i == 4) {
+				x = 18;
+			}
+			if( i== 0 || i == 2) {
+				y = 630;
+			}if( i== 1 || i == 3) {
+				y = 600;
+			}
+			players[i].setBounds(x, y, 51, 44);
+				board.add(players[i]);
 		}
 	}
 
