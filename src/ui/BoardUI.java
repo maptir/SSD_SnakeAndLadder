@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,8 +9,10 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -20,49 +23,50 @@ import snakeandladder.Player;
 import snakeandladder.BoardView;
 
 public class BoardUI extends JPanel implements BoardView {
-	private JPanel board;
 	private JButton rollButton;
 	private JTextArea textArea;
 	private JLabel dice;
 	private ImageIcon[] diceImages;
 	private JButton restartButton, replayButton;
 	private JPanel endLabel;
-
 	private JLabel[] players;
+	private static JFrame frame;
+
+	private static final int FRAME_WIDTH = 700;
+	private static final int FRAME_HIEGHT = 840;
 
 	private Game game;
 
-	public BoardUI(int p) {
-		this.game = new Game(p, this);
+	public BoardUI(int numPlayer) {
+		this.game = new Game(numPlayer, this);
+		frame = new JFrame("Snake and Ladder");
+		frame.getContentPane().add(this);
+		frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HIEGHT));
+		frame.setResizable(false);
 		initialize();
 	}
 
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		try {
+			BufferedImage img = ImageIO.read(this.getClass().getResource("/res/board.png"));
+			g.drawImage(img, 0, 0, FRAME_WIDTH, FRAME_HIEGHT, null);
+		} catch (IOException e) {
+
+		}
+	}
+
+	public void run() {
+		frame.setVisible(true);
+	}
+
 	private void initialize() {
-		// TODO Auto-generated method stub
-		board = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				try {
-					BufferedImage img = ImageIO.read(this.getClass().getResource("/res/board.png"));
-					g.drawImage(img, 0, 0, 700, 840, null);
-				} catch (IOException e) {
+		this.setBounds(0, 0, FRAME_WIDTH, FRAME_HIEGHT);
+		this.setLayout(null);
 
-				}
-			}
-		};
-		board.setBounds(0, 0, 700, 840);
-		board.setLayout(null);
-
-		endLabel = new JPanel() {
-			protected void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				g.drawRect(0, 0, 501, 281);
-				g.setColor(new Color(170, 242, 255));
-				g.fillRect(0, 0, 500, 280);
-			}
-		};
-		endLabel.setBounds(80, 200, 500, 280);
+		endLabel = new JPanel();
+		endLabel.setBounds(0, 290, FRAME_WIDTH, FRAME_HIEGHT);
 
 		ImageIcon image = new ImageIcon(getClass().getResource("/res/replay.png"));
 		replayButton = new JButton(image);
@@ -80,10 +84,12 @@ public class BoardUI extends JPanel implements BoardView {
 		restartButton.setBounds(350, 410, 270, 110);
 		endLabel.add(restartButton);
 		endLabel.setVisible(false);
-		board.add(endLabel);
+		endLabel.setOpaque(false);
+		this.add(endLabel);
 
 		ImageIcon img = new ImageIcon(getClass().getResource("/res/roll.png"));
 		rollButton = new JButton(img);
+		rollButton.setDisabledIcon(img);
 		rollButton.setBounds(526, 697, 144, 111);
 		rollButton.setBorderPainted(false);
 		rollButton.addActionListener(new ActionListener() {
@@ -112,7 +118,7 @@ public class BoardUI extends JPanel implements BoardView {
 				}
 			}
 		});
-		board.add(rollButton);
+		this.add(rollButton);
 
 		dice = new JLabel();
 		diceImages = new ImageIcon[6];
@@ -120,12 +126,12 @@ public class BoardUI extends JPanel implements BoardView {
 			diceImages[i] = new ImageIcon(getClass().getResource("/res/dice" + (i + 1) + ".png"));
 		}
 		dice.setBounds(395, 697, 111, 111);
-		board.add(dice);
+		this.add(dice);
 
 		textArea = new JTextArea();
 		textArea.setBounds(30, 697, 350, 111);
 		textArea.setEditable(false);
-		board.add(textArea);
+		this.add(textArea);
 
 		int x = 0;
 		int y = 0;
@@ -146,17 +152,12 @@ public class BoardUI extends JPanel implements BoardView {
 				y = 600;
 			}
 			players[i].setBounds(x, y, 51, 44);
-			board.add(players[i]);
+			this.add(players[i]);
 		}
-	}
-
-	public JPanel getPanel() {
-		return board;
 	}
 
 	@Override
 	public void movePlayer(int steps) {
-		System.out.println("MOVE PLAYER");
 		Timer timer = new Timer(50, new ActionListener() {
 			int playerPos = game.currentPlayerPosition() + 1;
 			int i = 0;

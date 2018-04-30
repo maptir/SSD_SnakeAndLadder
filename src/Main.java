@@ -1,14 +1,13 @@
-import java.awt.Dimension;
-import java.io.IOException;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import ui.IndexUI;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, UnsupportedLookAndFeelException {
+		UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 		IndexUI ui = new IndexUI();
 		ui.run();
 	}
