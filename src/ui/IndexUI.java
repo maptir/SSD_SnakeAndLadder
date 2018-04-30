@@ -19,7 +19,6 @@ public class IndexUI extends JPanel {
 	private static final int FRAME_HIGHT = 840;
 	private static JFrame frame;
 
-
 	JPanel p = new JPanel();
 	JPanel panel;
 	JButton p2, p3, p4;
@@ -95,8 +94,6 @@ public class IndexUI extends JPanel {
 		return player;
 	}
 
-
-
 	private static void init(JPanel panel) {
 		System.out.println("start");
 		frame = new JFrame("Snake and Ladder");
@@ -106,15 +103,15 @@ public class IndexUI extends JPanel {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	
+
 	public void run() {
 		intialize();
 		init(getPanel());
 	}
-	
+
 	public void setBoard() {
 		BoardUI board = new BoardUI(getPlayer());
 		init(board.getPanel());
 	}
-	
+
 }

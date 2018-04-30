@@ -31,7 +31,6 @@ public class BoardUI extends JPanel implements BoardView {
 	private JLabel[] players;
 
 	private Game game;
-	private Timer timer;
 
 	public BoardUI(int p) {
 		this.game = new Game(p, this);
@@ -157,14 +156,15 @@ public class BoardUI extends JPanel implements BoardView {
 
 	@Override
 	public void movePlayer(int steps) {
-		timer = new Timer(50, new ActionListener() {
+		System.out.println("MOVE PLAYER");
+		Timer timer = new Timer(50, new ActionListener() {
 			int playerPos = game.currentPlayerPosition() + 1;
 			int i = 0;
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				rollButton.setEnabled(false);
 				if (i < steps) {
+					rollButton.setEnabled(false);
 					JLabel curPlayer = players[game.currentPlayerIndex()];
 					if (playerPos % 10 == 0) {
 						curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() - 64);
@@ -177,7 +177,7 @@ public class BoardUI extends JPanel implements BoardView {
 					i++;
 				} else {
 					rollButton.setEnabled(true);
-					timer.stop();
+					((Timer) event.getSource()).stop();
 				}
 			}
 		});
