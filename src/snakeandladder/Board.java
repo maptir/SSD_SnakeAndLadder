@@ -7,7 +7,7 @@ import square.SnakeSquare;
 import square.Square;
 
 public class Board {
-	public static final int SIZE = 11;
+	public static final int SIZE = 100;
 	private Square[] squares;
 	private BoardView bView;
 
@@ -17,7 +17,7 @@ public class Board {
 		for (int i = 0; i < squares.length; i++)
 			squares[i] = new Square(i);
 
-//		initSpecialSquare();
+		initSpecialSquare();
 		squares[squares.length - 1].setGoal(true);
 	}
 

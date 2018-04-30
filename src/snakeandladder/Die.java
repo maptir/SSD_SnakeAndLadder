@@ -5,8 +5,8 @@ public class Die {
 	private int face;
 
 	public void roll() {
-//		face = (int) (Math.random() * MAX_FACE + 1);
-		face = 5;
+		face = (int) (Math.random() * MAX_FACE + 1);
+//		face = 5;
 	}
 
 	public int getFace() {
