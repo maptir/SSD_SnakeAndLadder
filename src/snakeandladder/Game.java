@@ -47,6 +47,10 @@ public class Game {
 
 	public void switchPlayer() {
 		currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+		if (currentPlayer().isFreeze()) {
+			currentPlayer().setFreeze(false);
+			switchPlayer();
+		}
 	}
 
 	public void currentPlayerMove(int steps) {

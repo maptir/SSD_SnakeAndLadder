@@ -3,6 +3,7 @@ package ui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -15,7 +16,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 
 import snakeandladder.Game;
@@ -26,9 +29,10 @@ public class BoardUI extends JPanel implements BoardView {
 	private JButton rollButton;
 	private JTextArea textArea;
 	private JLabel dice;
-	private ImageIcon[] diceImages;
 	private JButton restartButton, replayButton;
 	private JPanel endLabel;
+	private JScrollPane scroll;
+	private ImageIcon[] diceImages;
 	private JLabel[] players;
 	private static JFrame frame;
 
@@ -42,6 +46,7 @@ public class BoardUI extends JPanel implements BoardView {
 		frame = new JFrame("Snake and Ladder");
 		frame.getContentPane().add(this);
 		frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HIEGHT));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		initialize();
 	}
@@ -58,6 +63,7 @@ public class BoardUI extends JPanel implements BoardView {
 	}
 
 	public void run() {
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 
@@ -96,26 +102,27 @@ public class BoardUI extends JPanel implements BoardView {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Player currentPlayer = game.currentPlayer();
-				textArea.append("Current Player is " + currentPlayer + "\n");
-
-				if (currentPlayer.isFreeze()) {
-					System.out.println(currentPlayer.getName() + " is FREEZE can't walk for 1 round.");
-					currentPlayer.setFreeze(false);
-					return;
-				}
+				addPlayerMoveMsg("Current Player is " + currentPlayer);
 
 				int face = game.currentPlayerRollDice();
-				System.out.println("The die is roll FACE = " + face);
+				addPlayerMoveMsg("The die is roll FACE = " + face);
 				dice.setIcon(diceImages[face - 1]);
 				game.currentPlayerMove(face);
-				System.out.println(currentPlayer + " is at " + game.currentPlayerPosition());
+				addPlayerMoveMsg(currentPlayer + " is at " + game.currentPlayerPosition());
 				if (game.currentPlayerWin()) {
-					System.out.println("Player " + currentPlayer.getName() + " WINS!");
+					addPlayerMoveMsg("Player " + currentPlayer.getName() + " WINS!");
 					endLabel.setVisible(true);
 					game.end();
 				} else {
 					game.switchPlayer();
+					// currentPlayer = game.currentPlayer();
+					// if (currentPlayer.isFreeze()) {
+					// currentPlayer.setFreeze(false);
+					// game.switchPlayer();
+					// addPlayerMoveMsg("SKIP to " + currentPlayer.getName());
+					// }
 				}
+				addPlayerMoveMsg("----------------------------------------");
 			}
 		});
 		this.add(rollButton);
@@ -129,9 +136,11 @@ public class BoardUI extends JPanel implements BoardView {
 		this.add(dice);
 
 		textArea = new JTextArea();
-		textArea.setBounds(30, 697, 350, 111);
 		textArea.setEditable(false);
-		this.add(textArea);
+		scroll = new JScrollPane(textArea);
+		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setBounds(30, 697, 350, 111);
+		this.add(scroll);
 
 		int x = 0;
 		int y = 0;
@@ -159,22 +168,23 @@ public class BoardUI extends JPanel implements BoardView {
 	@Override
 	public void movePlayer(int steps) {
 		Timer timer = new Timer(50, new ActionListener() {
+			JLabel curPlayer = players[game.currentPlayerIndex()];
 			int playerPos = game.currentPlayerPosition() + 1;
 			int i = 0;
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				if (i < steps) {
+				if (i < Math.abs(steps)) {
 					rollButton.setEnabled(false);
-					JLabel curPlayer = players[game.currentPlayerIndex()];
+					int gap = 64 * Integer.signum(steps);
 					if (playerPos % 10 == 0) {
-						curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() - 64);
+						curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() - gap);
 					} else if ((playerPos / 10) % 2 == 0) {
-						curPlayer.setLocation(curPlayer.getX() + 64, curPlayer.getY());
+						curPlayer.setLocation(curPlayer.getX() + gap, curPlayer.getY());
 					} else {
-						curPlayer.setLocation(curPlayer.getX() - 64, curPlayer.getY());
+						curPlayer.setLocation(curPlayer.getX() - gap, curPlayer.getY());
 					}
-					playerPos++;
+					playerPos += Integer.signum(steps);
 					i++;
 				} else {
 					rollButton.setEnabled(true);
@@ -183,6 +193,11 @@ public class BoardUI extends JPanel implements BoardView {
 			}
 		});
 		timer.start();
+	}
+
+	@Override
+	public void addPlayerMoveMsg(String msg) {
+		textArea.append(msg + "\n");
 	}
 
 }

@@ -27,6 +27,7 @@ public class IndexUI extends JPanel {
 		frame = new JFrame("Snake and Ladder");
 		frame.getContentPane().add(this);
 		frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HIEGHT));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setResizable(false);
 		intialize();
 	}
@@ -43,6 +44,7 @@ public class IndexUI extends JPanel {
 	}
 
 	public void run() {
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 
