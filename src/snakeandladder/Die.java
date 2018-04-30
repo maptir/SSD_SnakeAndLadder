@@ -6,7 +6,6 @@ public class Die {
 
 	public void roll() {
 		face = (int) (Math.random() * MAX_FACE + 1);
-		face = 6;
 	}
 
 	public int getFace() {
