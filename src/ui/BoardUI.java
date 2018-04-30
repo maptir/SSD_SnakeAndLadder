@@ -21,6 +21,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 
+import replay.Rolled;
 import snakeandladder.Game;
 import snakeandladder.Player;
 import snakeandladder.BoardView;
@@ -80,6 +81,13 @@ public class BoardUI extends JPanel implements BoardView {
 		replayButton.setContentAreaFilled(false);
 		replayButton.setBorderPainted(false);
 		replayButton.setBounds(70, 310, 256, 110);
+		replayButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
 		endLabel.add(replayButton);
 
 		ImageIcon image1 = new ImageIcon(getClass().getResource("/res/restart.png"));
@@ -88,6 +96,13 @@ public class BoardUI extends JPanel implements BoardView {
 		restartButton.setContentAreaFilled(false);
 		restartButton.setBorderPainted(false);
 		restartButton.setBounds(350, 410, 270, 110);
+		restartButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				restart();
+			}
+		});
 		endLabel.add(restartButton);
 		endLabel.setVisible(false);
 		endLabel.setOpaque(false);
@@ -108,19 +123,14 @@ public class BoardUI extends JPanel implements BoardView {
 				addPlayerMoveMsg("The die is roll FACE = " + face);
 				dice.setIcon(diceImages[face - 1]);
 				game.currentPlayerMove(face);
-				addPlayerMoveMsg(currentPlayer + " is at " + game.currentPlayerPosition());
+				addPlayerMoveMsg(currentPlayer + " is at " + (game.currentPlayerPosition() + 1));
 				if (game.currentPlayerWin()) {
 					addPlayerMoveMsg("Player " + currentPlayer.getName() + " WINS!");
 					endLabel.setVisible(true);
+					rollButton.setEnabled(false);
 					game.end();
 				} else {
 					game.switchPlayer();
-					// currentPlayer = game.currentPlayer();
-					// if (currentPlayer.isFreeze()) {
-					// currentPlayer.setFreeze(false);
-					// game.switchPlayer();
-					// addPlayerMoveMsg("SKIP to " + currentPlayer.getName());
-					// }
 				}
 				addPlayerMoveMsg("----------------------------------------");
 			}
@@ -165,30 +175,68 @@ public class BoardUI extends JPanel implements BoardView {
 		}
 	}
 
+	public void restart() {
+		int x = 0;
+		int y = 0;
+		game = new Game(game.getNumPlayers(), this);
+		endLabel.setVisible(false);
+		rollButton.setEnabled(true);
+		for (int i = 0; i < players.length; i++) {
+			if (i == 0 || i == 1)
+				x = 50;
+			if (i == 2 || i == 4)
+				x = 18;
+			if (i == 0 || i == 2)
+				y = 630;
+			if (i == 1 || i == 3)
+				y = 600;
+			players[i].setLocation(x, y);
+		}
+		textArea.setText("");
+		dice.setIcon(null);
+	}
+
 	@Override
 	public void movePlayer(int steps) {
 		Timer timer = new Timer(50, new ActionListener() {
 			JLabel curPlayer = players[game.currentPlayerIndex()];
 			int playerPos = game.currentPlayerPosition() + 1;
 			int i = 0;
+			int gap = 64;
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (i < Math.abs(steps)) {
 					rollButton.setEnabled(false);
-					int gap = 64 * Integer.signum(steps);
-					if (playerPos % 10 == 0) {
-						curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() - gap);
-					} else if ((playerPos / 10) % 2 == 0) {
-						curPlayer.setLocation(curPlayer.getX() + gap, curPlayer.getY());
-					} else {
-						curPlayer.setLocation(curPlayer.getX() - gap, curPlayer.getY());
-					}
+					if (Integer.signum(steps) > 0)
+						moveForward();
+					else
+						moveBackward();
 					playerPos += Integer.signum(steps);
 					i++;
 				} else {
 					rollButton.setEnabled(true);
 					((Timer) event.getSource()).stop();
+				}
+			}
+
+			public void moveForward() {
+				if (playerPos % 10 == 0) {
+					curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() - gap);
+				} else if ((playerPos / 10) % 2 == 0) {
+					curPlayer.setLocation(curPlayer.getX() + gap, curPlayer.getY());
+				} else {
+					curPlayer.setLocation(curPlayer.getX() - gap, curPlayer.getY());
+				}
+			}
+
+			public void moveBackward() {
+				if (playerPos % 10 == 1) {
+					curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() + gap);
+				} else if (((playerPos - 1) / 10) % 2 == 0) {
+					curPlayer.setLocation(curPlayer.getX() - gap, curPlayer.getY());
+				} else {
+					curPlayer.setLocation(curPlayer.getX() + gap, curPlayer.getY());
 				}
 			}
 		});

@@ -7,7 +7,7 @@ import square.SnakeSquare;
 import square.Square;
 
 public class Board {
-	public static final int SIZE = 100;
+	public static final int SIZE = 11;
 	private Square[] squares;
 	private BoardView bView;
 
@@ -17,7 +17,7 @@ public class Board {
 		for (int i = 0; i < squares.length; i++)
 			squares[i] = new Square(i);
 
-		initSpecialSquare();
+//		initSpecialSquare();
 		squares[squares.length - 1].setGoal(true);
 	}
 
@@ -41,8 +41,8 @@ public class Board {
 		squares[63] = new SnakeSquare(squares[63].getNumber(), 59);
 		squares[73] = new SnakeSquare(squares[73].getNumber(), 52);
 		squares[88] = new SnakeSquare(squares[88].getNumber(), 67);
-		squares[94] = new SnakeSquare(squares[94].getNumber(), 74);
 		squares[91] = new SnakeSquare(squares[91].getNumber(), 87);
+		squares[94] = new SnakeSquare(squares[94].getNumber(), 74);
 		squares[98] = new SnakeSquare(squares[98].getNumber(), 79);
 
 		squares[16] = new FreezeSquare(squares[16].getNumber());
@@ -67,27 +67,36 @@ public class Board {
 		String curName = player.getName();
 
 		if (squares[pos] instanceof BackwardSquare) {
-			steps *= -1;
 			addPlayerMoveMsg(curName + " found a TRAP !! MOVE BACK for -> " + steps);
+			steps *= -1;
 		}
 		int newPos = pos + steps;
-		if (newPos >= squares.length)
+		// Reach Goal
+		if (newPos >= squares.length) {
 			newPos = 2 * (squares.length - 1) - newPos;
-		movePlayer(steps);
+			movePlayer(squares.length - pos - 1);
+			movePlayer((squares.length - pos - 1) - steps);
+			addPlayerMoveMsg(
+					curName + " roll a die exceed the goal MOVE BACK for -> " + (steps - (squares.length - pos - 1)));
+		} else {
+			movePlayer(steps);
+		}
 		squares[pos].removePiece(piece);
 		addPiece(piece, newPos);
 
 		if (squares[newPos] instanceof LadderSquare) {
 			LadderSquare ladderSquare = (LadderSquare) squares[newPos];
 			steps = ladderSquare.goTo() - newPos;
-			addPlayerMoveMsg(curName + " found a LADDER at " + newPos + " !! GOTO -> " + ladderSquare.goTo());
+			addPlayerMoveMsg(
+					curName + " found a LADDER at " + (newPos + 1) + " !! GOTO -> " + (ladderSquare.goTo() + 1));
 			movePiece(player, piece, steps);
 		}
 
 		if (squares[newPos] instanceof SnakeSquare) {
 			SnakeSquare snakeSquare = (SnakeSquare) squares[newPos];
-			steps = newPos - snakeSquare.goTo();
-			addPlayerMoveMsg(curName + " found a SNAKE at " + newPos + " !! BACKTO -> " + snakeSquare.goTo());
+			steps = snakeSquare.goTo() - newPos;
+			addPlayerMoveMsg(
+					curName + " found a SNAKE at " + (newPos + 1) + " !! BACKTO -> " + (snakeSquare.goTo() + 1));
 			movePiece(player, piece, steps);
 		}
 
