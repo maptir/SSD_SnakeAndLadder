@@ -1,6 +1,7 @@
 package online;
 
 import java.io.IOException;
+import java.util.Observable;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -9,12 +10,14 @@ import com.esotericsoftware.kryonet.Listener;
 import ui.BoardUI;
 import ui.MultiplayerUI;
 
-public class PlayerClient {
+public class PlayerClient extends Observable {
 	
 	private BoardUI board;
 	private Client client;
 	private String PlayerName;
 	private String status;
+	private int currentPos;
+	private int rolled;
 
 	public PlayerClient() throws IOException {
 		client = new Client();
@@ -36,7 +39,11 @@ public class PlayerClient {
 		public void received(Connection connection, Object o) {
 			if(o instanceof SendData) {
 				SendData receive = (SendData)o;
-				System.out.println(receive.playerName);
+				if(receive.status.equals("Ready")) {
+					BoardUI board = new BoardUI(4);
+					board.run();
+					setStatus("Play");
+				}
 			}
 		}
 
@@ -44,7 +51,8 @@ public class PlayerClient {
 	
 	public void sendMessage() {
 		SendData data = new SendData();
-		data.playerName = "Yo";
+		data.playerName = this.PlayerName;
+		data.status = this.status;
 		data.currentPos = 0;
 		data.rolled = 0;
 		client.sendTCP(data);
@@ -70,6 +78,8 @@ public class PlayerClient {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		PlayerClient playerClient = new PlayerClient();
 		MultiplayerUI ui = new MultiplayerUI(playerClient);
+		playerClient.addObserver(ui);
+
 	}
 	
 }

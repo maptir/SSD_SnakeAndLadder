@@ -5,8 +5,8 @@ import java.awt.Dimension;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,7 +18,7 @@ import javax.swing.WindowConstants;
 
 import online.PlayerClient;
 
-public class MultiplayerUI extends JFrame {
+public class MultiplayerUI extends JFrame implements Observer {
 
 	private PlayerClient playerClient;
 
@@ -48,7 +48,9 @@ public class MultiplayerUI extends JFrame {
 		button.addActionListener(new ActionListener() {		
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				playerClient.sendMessage();
+				playerClient.setPlayerName(textfield.getText());
+				playerClient.setStatus("connecting");
+				close();
 			}
 		});
 		panel.add(label, BorderLayout.NORTH);
@@ -57,5 +59,19 @@ public class MultiplayerUI extends JFrame {
 		this.add(panel);
 	}
 
+	private void close() {
+		this.dispose();
+	}
+	
+	private void change() {
+		panel.removeAll();
+		label.setText("waiting........");
+		panel.add(label);
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		close();
+	}
 
 }

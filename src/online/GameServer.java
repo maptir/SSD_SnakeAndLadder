@@ -15,10 +15,12 @@ public class GameServer {
 	private Server gameServer;
 	private List<Connection> clientConnections;
 	private List<SendData> rollHistory = new ArrayList<>();
+	private boolean playing;
 	
 	public GameServer() throws IOException {
 		gameServer = new Server();
 		
+		playing = false;
 		clientConnections = new ArrayList<Connection>();
 		gameServer.bind(54333);
 		gameServer.addListener(new GameServerListener());
@@ -32,9 +34,19 @@ public class GameServer {
 		
 		@Override
 		public void connected(Connection connection) {
-			super.connected(connection);
-			clientConnections.add(connection);
-			System.out.println("Player Connected");
+			if(playing != true) {
+				super.connected(connection);
+				clientConnections.add(connection);
+				System.out.println("Player Connected");
+			}
+			if(clientConnections.size() == 4) {
+				for(Connection c : clientConnections) {
+					SendData data = new SendData();
+					data.status = "Ready";
+					c.sendTCP(data);
+				}
+				playing = true;
+			}
 		}
 		
 		@Override
