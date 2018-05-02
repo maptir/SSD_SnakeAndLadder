@@ -2,7 +2,8 @@ package online;
 
 public class SendData {
 	
-	public String PlayerName;
+	public String playerName;
+	public String status;
 	public int rolled;
 	public int currentPos;
 	

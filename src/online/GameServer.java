@@ -54,13 +54,15 @@ public class GameServer {
 //					c.sendTCP(receive);
 //				}
 				System.out.println("------RECIEVE------");
-				System.out.println(receive.PlayerName);
+				System.out.println(receive.playerName);
 				System.out.println(receive.currentPos);
 				System.out.println(receive.rolled);
 
 				
 			}
 		}
+		
+		
 		
 	}
 	

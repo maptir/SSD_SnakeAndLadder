@@ -38,7 +38,7 @@ public class PlayerClient {
 		public void received(Connection connection, Object o) {
 			if(o instanceof SendData) {
 				SendData receive = (SendData)o;
-				System.out.println(receive.PlayerName);
+				System.out.println(receive.playerName);
 			}
 		}
 
@@ -46,7 +46,7 @@ public class PlayerClient {
 	
 	public void sendMessage() {
 		SendData data = new SendData();
-		data.PlayerName = "Yo";
+		data.playerName = "Yo";
 		data.currentPos = 0;
 		data.rolled = 0;
 		client.sendTCP(data);
