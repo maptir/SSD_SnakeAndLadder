@@ -16,15 +16,20 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import online.PlayerClient;
+
 public class MultiplayerUI extends JFrame {
+
+	private PlayerClient playerClient;
 
 	private JLabel label;
 	private JPanel panel;
 	private JTextField textfield;
 	private JButton button;
 
-	public MultiplayerUI() {
+	public MultiplayerUI(PlayerClient playerClient) {
 		super("Multiplayer");
+		this.playerClient = playerClient;
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		initLayout();
 		pack();
@@ -43,7 +48,7 @@ public class MultiplayerUI extends JFrame {
 		button.addActionListener(new ActionListener() {		
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				playerClient.sendMessage();
 			}
 		});
 		panel.add(label, BorderLayout.NORTH);
@@ -51,11 +56,6 @@ public class MultiplayerUI extends JFrame {
 		panel.add(button, BorderLayout.SOUTH);
 		this.add(panel);
 	}
-
-	public static void main(String[] args) {
-		MultiplayerUI ui = new MultiplayerUI();
-	}
-
 
 
 }
