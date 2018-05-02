@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import replay.Rolled;
+import square.Square;
 
 public class Game {
 	private Player[] players;
@@ -15,11 +16,11 @@ public class Game {
 
 	private List<Rolled> histories;
 
-	public Game(int numPlayer, BoardView bView) {
+	public Game(int numPlayer) {
 		currentPlayerIndex = 0;
 		players = new Player[numPlayer];
 		die = new Die();
-		board = new Board(bView);
+		board = new Board();
 		ended = false;
 		histories = new ArrayList<>();
 
@@ -54,9 +55,8 @@ public class Game {
 	}
 
 	public void currentPlayerMove(int steps) {
-		this.board.movePiece(currentPlayer(), currentPlayer().getPiece(), steps);
+		this.board.movePiece(currentPlayer().getPiece(), steps);
 		histories.add(new Rolled(currentPlayer(), steps, currentPlayerPosition()));
-		System.out.println(histories);
 	}
 
 	public String currentPlayerName() {
@@ -81,5 +81,13 @@ public class Game {
 
 	public List<Rolled> getHistories() {
 		return histories;
+	}
+
+	public Square getCurrentSquare(int pos) {
+		return board.getSquare(pos);
+	}
+
+	public int getBoardSize() {
+		return board.getBoardSize();
 	}
 }

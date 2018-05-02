@@ -1,16 +1,13 @@
 package ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,12 +18,15 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 
-import replay.Rolled;
 import snakeandladder.Game;
 import snakeandladder.Player;
-import snakeandladder.BoardView;
+import square.BackwardSquare;
+import square.FreezeSquare;
+import square.LadderSquare;
+import square.SnakeSquare;
+import square.Square;
 
-public class BoardUI extends JPanel implements BoardView {
+public class BoardUI extends JPanel {
 	private JButton rollButton;
 	private JTextArea textArea;
 	private JLabel dice;
@@ -36,6 +36,7 @@ public class BoardUI extends JPanel implements BoardView {
 	private ImageIcon[] diceImages;
 	private JLabel[] players;
 	private static JFrame frame;
+	private int boardSize;
 
 	private static final int FRAME_WIDTH = 700;
 	private static final int FRAME_HIEGHT = 840;
@@ -43,7 +44,8 @@ public class BoardUI extends JPanel implements BoardView {
 	private Game game;
 
 	public BoardUI(int numPlayer) {
-		this.game = new Game(numPlayer, this);
+		this.game = new Game(numPlayer);
+		this.boardSize = game.getBoardSize();
 		frame = new JFrame("Snake and Ladder");
 		frame.getContentPane().add(this);
 		frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HIEGHT));
@@ -122,17 +124,15 @@ public class BoardUI extends JPanel implements BoardView {
 				int face = game.currentPlayerRollDice();
 				addPlayerMoveMsg("The die is roll FACE = " + face);
 				dice.setIcon(diceImages[face - 1]);
+				movePiece(face);
 				game.currentPlayerMove(face);
 				addPlayerMoveMsg(currentPlayer + " is at " + (game.currentPlayerPosition() + 1));
 				if (game.currentPlayerWin()) {
 					addPlayerMoveMsg("Player " + currentPlayer.getName() + " WINS!");
 					endLabel.setVisible(true);
-					rollButton.setEnabled(false);
+					rollButton.setVisible(false);
 					game.end();
-				} else {
-					game.switchPlayer();
 				}
-				addPlayerMoveMsg("----------------------------------------");
 			}
 		});
 		this.add(rollButton);
@@ -178,9 +178,9 @@ public class BoardUI extends JPanel implements BoardView {
 	public void restart() {
 		int x = 0;
 		int y = 0;
-		game = new Game(game.getNumPlayers(), this);
+		game = new Game(game.getNumPlayers());
 		endLabel.setVisible(false);
-		rollButton.setEnabled(true);
+		rollButton.setVisible(true);
 		for (int i = 0; i < players.length; i++) {
 			if (i == 0 || i == 1)
 				x = 50;
@@ -196,18 +196,40 @@ public class BoardUI extends JPanel implements BoardView {
 		dice.setIcon(null);
 	}
 
-	@Override
-	public void movePlayer(int steps) {
-		Timer timer = new Timer(50, new ActionListener() {
+	public void movePiece(int steps) {
+		int pos = game.currentPlayerPosition();
+		String curName = game.currentPlayerName();
+		Square curSquare = game.getCurrentSquare(pos);
+
+		if (curSquare instanceof BackwardSquare) {
+			addPlayerMoveMsg(curName + " found a TRAP !! MOVE BACK for -> " + steps);
+			steps *= -1;
+		}
+		int newPos = pos + steps;
+		System.out.println(newPos);
+		rollButton.setEnabled(false);
+		// Reach Goal
+		if (newPos >= boardSize) {
+			movePlayer(boardSize - pos - 1, curName, curSquare, pos);
+			addPlayerMoveMsg(
+					curName + " roll a die exceed the goal MOVE BACK for -> " + (steps - (boardSize - pos - 1)));
+		} else {
+			movePlayer(steps, curName, curSquare, pos);
+		}
+	}
+
+	public void movePlayer(int steps, String curName, Square curSquare, int pos) {
+		Timer timer = new Timer(100, new ActionListener() {
 			JLabel curPlayer = players[game.currentPlayerIndex()];
 			int playerPos = game.currentPlayerPosition() + 1;
 			int i = 0;
 			int gap = 64;
+			int newPos = pos + steps;
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
+				System.out.println(steps);
 				if (i < Math.abs(steps)) {
-					rollButton.setEnabled(false);
 					if (Integer.signum(steps) > 0)
 						moveForward();
 					else
@@ -215,8 +237,34 @@ public class BoardUI extends JPanel implements BoardView {
 					playerPos += Integer.signum(steps);
 					i++;
 				} else {
-					rollButton.setEnabled(true);
 					((Timer) event.getSource()).stop();
+					Square curSquare = game.getCurrentSquare(playerPos - 1);
+					if (curSquare instanceof LadderSquare) {
+						LadderSquare ladderSquare = (LadderSquare) curSquare;
+						addPlayerMoveMsg(curName + " found a LADDER at " + (newPos + 1) + " !! GOTO -> "
+								+ (ladderSquare.goTo() + 1));
+						movePiece(ladderSquare.goTo() - newPos);
+						game.currentPlayerMove(ladderSquare.goTo() - newPos);
+					}
+					if (curSquare instanceof SnakeSquare) {
+						SnakeSquare snakeSquare = (SnakeSquare) curSquare;
+						addPlayerMoveMsg(curName + " found a SNAKE at " + (newPos + 1) + " !! BACKTO -> "
+								+ (snakeSquare.goTo() + 1));
+						movePiece(snakeSquare.goTo() - newPos);
+						game.currentPlayerMove(snakeSquare.goTo() - newPos);
+					}
+					if (curSquare instanceof FreezeSquare) {
+						game.currentPlayer().setFreeze(true);
+						addPlayerMoveMsg(curName + " found a TRAP !! FREEZE for 1 round.");
+					}
+					if (newPos + 1 >= boardSize) {
+						System.out.println(steps - (boardSize - pos));
+						movePlayer(steps - (boardSize - pos), curName, curSquare, pos);
+					} else {
+						addPlayerMoveMsg("----------------------------------------");
+						rollButton.setEnabled(true);
+						game.switchPlayer();
+					}
 				}
 			}
 
@@ -243,7 +291,6 @@ public class BoardUI extends JPanel implements BoardView {
 		timer.start();
 	}
 
-	@Override
 	public void addPlayerMoveMsg(String msg) {
 		textArea.append(msg + "\n");
 	}

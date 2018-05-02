@@ -7,17 +7,15 @@ import square.SnakeSquare;
 import square.Square;
 
 public class Board {
-	public static final int SIZE = 100;
+	public static final int SIZE = 10;
 	private Square[] squares;
-	private BoardView bView;
 
-	public Board(BoardView bView) {
+	public Board() {
 		this.squares = new Square[SIZE];
-		this.bView = bView;
 		for (int i = 0; i < squares.length; i++)
 			squares[i] = new Square(i);
 
-		initSpecialSquare();
+		// initSpecialSquare();
 		squares[squares.length - 1].setGoal(true);
 	}
 
@@ -62,48 +60,15 @@ public class Board {
 		squares[pos].addPiece(piece);
 	}
 
-	public void movePiece(Player player, Piece piece, int steps) {
+	public void movePiece(Piece piece, int steps) {
 		int pos = getPiecePos(piece);
-		String curName = player.getName();
-
-		if (squares[pos] instanceof BackwardSquare) {
-			addPlayerMoveMsg(curName + " found a TRAP !! MOVE BACK for -> " + steps);
-			steps *= -1;
-		}
-		int newPos = pos + steps;
-		// Reach Goal
-		if (newPos >= squares.length) {
-			newPos = 2 * (squares.length - 1) - newPos;
-			movePlayer(squares.length - pos - 1);
-			movePlayer((squares.length - pos - 1) - steps);
-			addPlayerMoveMsg(
-					curName + " roll a die exceed the goal MOVE BACK for -> " + (steps - (squares.length - pos - 1)));
-		} else {
-			movePlayer(steps);
-		}
 		squares[pos].removePiece(piece);
+		if (squares[pos] instanceof BackwardSquare)
+			steps *= -1;
+		int newPos = pos + steps;
+		if (newPos >= squares.length)
+			newPos = 2 * (squares.length - 1) - newPos;
 		addPiece(piece, newPos);
-
-		if (squares[newPos] instanceof LadderSquare) {
-			LadderSquare ladderSquare = (LadderSquare) squares[newPos];
-			steps = ladderSquare.goTo() - newPos;
-			addPlayerMoveMsg(
-					curName + " found a LADDER at " + (newPos + 1) + " !! GOTO -> " + (ladderSquare.goTo() + 1));
-			movePiece(player, piece, steps);
-		}
-
-		if (squares[newPos] instanceof SnakeSquare) {
-			SnakeSquare snakeSquare = (SnakeSquare) squares[newPos];
-			steps = snakeSquare.goTo() - newPos;
-			addPlayerMoveMsg(
-					curName + " found a SNAKE at " + (newPos + 1) + " !! BACKTO -> " + (snakeSquare.goTo() + 1));
-			movePiece(player, piece, steps);
-		}
-
-		if (squares[newPos] instanceof FreezeSquare) {
-			player.setFreeze(true);
-			addPlayerMoveMsg(curName + " found a TRAP !! FREEZE for 1 round.");
-		}
 	}
 
 	public int getPiecePos(Piece piece) {
@@ -117,12 +82,12 @@ public class Board {
 		return squares[getPiecePos(piece)].isGoal();
 	}
 
-	public void addPlayerMoveMsg(String msg) {
-		bView.addPlayerMoveMsg(msg);
+	public Square getSquare(int pos) {
+		return squares[pos];
 	}
 
-	public void movePlayer(int steps) {
-		bView.movePlayer(steps);
+	public int getBoardSize() {
+		return SIZE;
 	}
 
 }
