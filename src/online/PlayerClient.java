@@ -24,7 +24,6 @@ public class PlayerClient {
 		client.start();
 		client.connect(5000, "127.0.0.1", 54333);
 		
-		this.sendMessage();
 	}
 	
 	class PlayerClientListener extends Listener {
@@ -56,6 +55,7 @@ public class PlayerClient {
 	 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		PlayerClient playerClient = new PlayerClient();
+		playerClient.sendMessage();
 	}
 	
 }

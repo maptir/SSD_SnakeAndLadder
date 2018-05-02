@@ -22,7 +22,7 @@ public class GameServer {
 		clientConnections = new ArrayList<Connection>();
 		gameServer.bind(54333);
 		gameServer.addListener(new GameServerListener());
-		
+		gameServer.getKryo().register(SendData.class);
 		gameServer.start();
 
 		System.out.println("Server Start");
@@ -50,9 +50,15 @@ public class GameServer {
 			if(o instanceof SendData) {
 				SendData receive = (SendData)o;
 				rollHistory.add(receive);
-				for(Connection c: clientConnections) {
-					c.sendTCP(receive);
-				}
+//				for(Connection c: clientConnections) {
+//					c.sendTCP(receive);
+//				}
+				System.out.println("------RECIEVE------");
+				System.out.println(receive.PlayerName);
+				System.out.println(receive.currentPos);
+				System.out.println(receive.rolled);
+
+				
 			}
 		}
 		
