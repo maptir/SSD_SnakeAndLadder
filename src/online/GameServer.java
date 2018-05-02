@@ -11,15 +11,16 @@ import com.esotericsoftware.kryonet.Server;
 import replay.Rolled;
 
 public class GameServer {
-	
+
 	private Server gameServer;
 	private List<Connection> clientConnections;
 	private List<SendData> rollHistory = new ArrayList<>();
 	private boolean playing;
-	
+	private int readyCount;
+
 	public GameServer() throws IOException {
 		gameServer = new Server();
-		
+		readyCount = 0;
 		playing = false;
 		clientConnections = new ArrayList<Connection>();
 		gameServer.bind(54333);
@@ -29,9 +30,9 @@ public class GameServer {
 
 		System.out.println("Server Start");
 	}
-	
+
 	class GameServerListener extends Listener {
-		
+
 		@Override
 		public void connected(Connection connection) {
 			if(playing != true) {
@@ -39,47 +40,44 @@ public class GameServer {
 				clientConnections.add(connection);
 				System.out.println("Player Connected");
 			}
-			if(clientConnections.size() == 4) {
-				for(Connection c : clientConnections) {
-					SendData data = new SendData();
-					data.status = "Ready";
-					c.sendTCP(data);
-				}
-				playing = true;
-			}
+
 		}
-		
+
 		@Override
 		public void disconnected(Connection connection) {
 			super.disconnected(connection);
 			clientConnections.remove(connection);
 			System.out.println("Client Disconnected");
 		}
-		
+
 		@Override
 		public void received(Connection connection, Object o) {
 			super.received(connection, o);
 			if(o instanceof SendData) {
 				SendData receive = (SendData)o;
-				rollHistory.add(receive);
-//				for(Connection c: clientConnections) {
-//					c.sendTCP(receive);
-//				}
-				System.out.println("------RECIEVE------");
-				System.out.println(receive.playerName);
-				System.out.println(receive.currentPos);
-				System.out.println(receive.rolled);
-
-				
+				if(receive.status.equals("Connecting")){
+					readyCount++;
+					System.out.println("Connection: "+readyCount +" Clients");
+				}
+			}
+			if(readyCount == 4) {
+				if(playing != true) {
+					for(Connection c : clientConnections) {
+						SendData data = new SendData();
+						data.status = "Ready";
+						c.sendTCP(data);
+					}
+					playing = true;
+				}
 			}
 		}
-		
-		
-		
+
+
+
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		GameServer server = new GameServer();
 	}
-	
+
 }

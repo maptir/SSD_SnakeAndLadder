@@ -25,6 +25,8 @@ public class PlayerClient extends Observable {
 		client.addListener(new PlayerClientListener());
 		client.start();
 		client.connect(5000, "127.0.0.1", 54333);
+		currentPos = 0;
+		rolled = 0;
 	}
 	
 	class PlayerClientListener extends Listener {
@@ -43,6 +45,8 @@ public class PlayerClient extends Observable {
 					BoardUI board = new BoardUI(4);
 					board.run();
 					setStatus("Play");
+					setChanged();
+					notifyObservers();
 				}
 			}
 		}
@@ -53,8 +57,8 @@ public class PlayerClient extends Observable {
 		SendData data = new SendData();
 		data.playerName = this.PlayerName;
 		data.status = this.status;
-		data.currentPos = 0;
-		data.rolled = 0;
+		data.currentPos = currentPos;
+		data.rolled = rolled;
 		client.sendTCP(data);
 		System.out.println("Message Sent");
 	}

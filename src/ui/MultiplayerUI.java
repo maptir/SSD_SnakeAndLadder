@@ -49,8 +49,9 @@ public class MultiplayerUI extends JFrame implements Observer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				playerClient.setPlayerName(textfield.getText());
-				playerClient.setStatus("connecting");
-				close();
+				playerClient.setStatus("Connecting");
+				playerClient.sendMessage();
+				change();
 			}
 		});
 		panel.add(label, BorderLayout.NORTH);
@@ -67,6 +68,7 @@ public class MultiplayerUI extends JFrame implements Observer {
 		panel.removeAll();
 		label.setText("waiting........");
 		panel.add(label);
+		this.repaint();
 	}
 
 	@Override
