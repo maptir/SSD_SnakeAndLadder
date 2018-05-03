@@ -13,15 +13,15 @@ import replay.Rolled;
 public class GameServer {
 
 	private Server gameServer;
+	private List<GameRoom> gameList;
 	private List<Connection> clientConnections;
 	private List<SendData> rollHistory = new ArrayList<>();
-	private boolean playing;
-	private int readyCount;
+	private int roomCount;
 
 	public GameServer() throws IOException {
+		gameList = new ArrayList<>();
 		gameServer = new Server();
-		readyCount = 0;
-		playing = false;
+		roomCount = 1;
 		clientConnections = new ArrayList<Connection>();
 		gameServer.bind(54333);
 		gameServer.addListener(new GameServerListener());
@@ -35,12 +35,14 @@ public class GameServer {
 
 		@Override
 		public void connected(Connection connection) {
-			if(playing != true) {
-				super.connected(connection);
-				clientConnections.add(connection);
-				System.out.println("Player Connected");
-			}
-
+			super.connected(connection);
+			GameRoom game = findAvailableRoom();
+			game.addConnection(connection);				
+			game.setRoomID(roomCount+"");
+			SendData data = new SendData();
+			data.roomId = game.getRoomID();
+			data.status = "sendRoomId";
+			connection.sendTCP(data);
 		}
 
 		@Override
@@ -56,24 +58,49 @@ public class GameServer {
 			if(o instanceof SendData) {
 				SendData receive = (SendData)o;
 				if(receive.status.equals("Connecting")){
-					readyCount++;
-					System.out.println("Connection: "+readyCount +" Clients");
-				}
-			}
-			if(readyCount == 4) {
-				if(playing != true) {
-					for(Connection c : clientConnections) {
-						SendData data = new SendData();
-						data.status = "Ready";
-						c.sendTCP(data);
+					System.out.println(receive.playerName + " Connected to RoomID:" + receive.roomId);
+					GameRoom game = findRoomById(receive.roomId);
+					if(game.isFull()) {
+						for(Connection playerConnection : game.getPlayerConnection()) {
+							SendData data = new SendData();
+							data.status = "Ready";
+							playerConnection.sendTCP(data);
+						}
 					}
-					playing = true;
 				}
 			}
 		}
 
+	}
 
+	public GameRoom findAvailableRoom() {
+		if(gameList.size()==0) {
+			System.out.println("No Room Available! Create New One");
+			GameRoom room = new GameRoom();
+			gameList.add(room);
+			return room;
+		}
+		else {
+			for(GameRoom room : gameList) {
+				if(room.isFull() == false) {
+					return room;
+				}
+			}
+			GameRoom room = new GameRoom();
+			roomCount++;
+			room.setRoomID(roomCount + "");
+			gameList.add(room);
+			return room;
+		}
+	}
 
+	public GameRoom findRoomById(String id) {
+		for(GameRoom game : gameList) {
+			if(game.getRoomID().equals(id))
+				return game;
+		}
+		System.out.println("Do not find Room with ID = "+id);
+		return null;
 	}
 
 	public static void main(String[] args) throws IOException {

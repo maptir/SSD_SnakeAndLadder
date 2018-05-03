@@ -45,10 +45,10 @@ public class MultiPlayerBoard extends JPanel {
 	private Game game;
 	private PlayerClient playerClient;
 
-	public MultiPlayerBoard (int numPlayer,PlayerClient playerClient) {
-		this.playerClient = playerClient;
+	public MultiPlayerBoard(int numPlayer,PlayerClient playerClient) {
 		this.game = new Game(numPlayer);
 		this.boardSize = game.getBoardSize();
+		this.playerClient = playerClient;
 		frame = new JFrame("Snake and Ladder");
 		frame.getContentPane().add(this);
 		frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HIEGHT));
@@ -121,9 +121,9 @@ public class MultiPlayerBoard extends JPanel {
 		rollButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				rollButton.setEnabled(false);
 				Player currentPlayer = game.currentPlayer();
 				addPlayerMoveMsg("Current Player is " + currentPlayer);
-
 				int face = game.currentPlayerRollDice();
 				addPlayerMoveMsg("The die is roll FACE = " + face);
 				dice.setIcon(diceImages[face - 1]);
@@ -184,6 +184,7 @@ public class MultiPlayerBoard extends JPanel {
 		game = new Game(game.getNumPlayers());
 		endLabel.setVisible(false);
 		rollButton.setVisible(true);
+		rollButton.setEnabled(true);
 		for (int i = 0; i < players.length; i++) {
 			if (i == 0 || i == 1)
 				x = 50;
@@ -209,60 +210,57 @@ public class MultiPlayerBoard extends JPanel {
 			steps *= -1;
 		}
 		int newPos = pos + steps;
-		System.out.println(newPos);
-		rollButton.setEnabled(false);
 		// Reach Goal
 		if (newPos >= boardSize) {
-			movePlayer(boardSize - pos - 1, curName, curSquare, pos);
-			addPlayerMoveMsg(
-					curName + " roll a die exceed the goal MOVE BACK for -> " + (steps - (boardSize - pos - 1)));
+			// Walk forward to goal and then backward if roll exceed boardSize.
+			movePlayer(boardSize - pos - 1, newPos, curName, curSquare);
 		} else {
-			movePlayer(steps, curName, curSquare, pos);
+			movePlayer(steps, newPos, curName, curSquare);
 		}
 	}
 
-	public void movePlayer(int steps, String curName, Square curSquare, int pos) {
+	public void movePlayer(int steps, int newPos, String curName, Square curSquare) {
 		Timer timer = new Timer(100, new ActionListener() {
 			JLabel curPlayer = players[game.currentPlayerIndex()];
-			int playerPos = game.currentPlayerPosition() + 1;
+			int pos = game.currentPlayerPosition() + 1;
 			int i = 0;
 			int gap = 64;
-			int newPos = pos + steps;
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				System.out.println(steps);
 				if (i < Math.abs(steps)) {
 					if (Integer.signum(steps) > 0)
 						moveForward();
 					else
 						moveBackward();
-					playerPos += Integer.signum(steps);
+					pos += Integer.signum(steps);
 					i++;
 				} else {
 					((Timer) event.getSource()).stop();
-					Square curSquare = game.getCurrentSquare(playerPos - 1);
+					Square curSquare = game.getCurrentSquare(pos - 1);
+					if (curSquare instanceof FreezeSquare) {
+						game.currentPlayer().setFreeze(true);
+						addPlayerMoveMsg(curName + " found a TRAP !! FREEZE for 1 round.");
+					}
 					if (curSquare instanceof LadderSquare) {
 						LadderSquare ladderSquare = (LadderSquare) curSquare;
 						addPlayerMoveMsg(curName + " found a LADDER at " + (newPos + 1) + " !! GOTO -> "
 								+ (ladderSquare.goTo() + 1));
 						movePiece(ladderSquare.goTo() - newPos);
 						game.currentPlayerMove(ladderSquare.goTo() - newPos);
-					}
-					if (curSquare instanceof SnakeSquare) {
+					} else if (curSquare instanceof SnakeSquare) {
 						SnakeSquare snakeSquare = (SnakeSquare) curSquare;
 						addPlayerMoveMsg(curName + " found a SNAKE at " + (newPos + 1) + " !! BACKTO -> "
 								+ (snakeSquare.goTo() + 1));
 						movePiece(snakeSquare.goTo() - newPos);
 						game.currentPlayerMove(snakeSquare.goTo() - newPos);
-					}
-					if (curSquare instanceof FreezeSquare) {
-						game.currentPlayer().setFreeze(true);
-						addPlayerMoveMsg(curName + " found a TRAP !! FREEZE for 1 round.");
-					}
-					if (newPos + 1 >= boardSize) {
-						System.out.println(steps - (boardSize - pos));
-						movePlayer(steps - (boardSize - pos), curName, curSquare, pos);
+					} else if (newPos >= boardSize) {
+						// Some player win
+						if (newPos - 1 == boardSize)
+							return;
+						addPlayerMoveMsg(
+								curName + " roll a die exceed the goal MOVE BACK for -> " + (newPos - (boardSize - 1)));
+						movePlayer((boardSize - 1) - newPos, 2 * (boardSize - 1) - newPos, curName, curSquare);
 					} else {
 						addPlayerMoveMsg("----------------------------------------");
 						rollButton.setEnabled(true);
@@ -272,9 +270,9 @@ public class MultiPlayerBoard extends JPanel {
 			}
 
 			public void moveForward() {
-				if (playerPos % 10 == 0) {
+				if (pos % 10 == 0) {
 					curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() - gap);
-				} else if ((playerPos / 10) % 2 == 0) {
+				} else if ((pos / 10) % 2 == 0) {
 					curPlayer.setLocation(curPlayer.getX() + gap, curPlayer.getY());
 				} else {
 					curPlayer.setLocation(curPlayer.getX() - gap, curPlayer.getY());
@@ -282,9 +280,10 @@ public class MultiPlayerBoard extends JPanel {
 			}
 
 			public void moveBackward() {
-				if (playerPos % 10 == 1) {
+				System.out.println(steps);
+				if (pos % 10 == 1) {
 					curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() + gap);
-				} else if (((playerPos - 1) / 10) % 2 == 0) {
+				} else if (((pos - 1) / 10) % 2 == 0) {
 					curPlayer.setLocation(curPlayer.getX() - gap, curPlayer.getY());
 				} else {
 					curPlayer.setLocation(curPlayer.getX() + gap, curPlayer.getY());

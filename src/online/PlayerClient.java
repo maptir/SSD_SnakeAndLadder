@@ -18,6 +18,7 @@ public class PlayerClient extends Observable {
 	private String status;
 	private int currentPos;
 	private int rolled;
+	private String roomId;
 
 	public PlayerClient() throws IOException {
 		client = new Client();
@@ -45,8 +46,12 @@ public class PlayerClient extends Observable {
 					BoardUI board = new BoardUI(4);
 					board.run();
 					setStatus("Play");
+					System.out.println("Play!!!!");
 					setChanged();
 					notifyObservers();
+				}
+				if(receive.status.equals("sendRoomId")) {
+					roomId = receive.roomId;
 				}
 			}
 		}
@@ -55,12 +60,13 @@ public class PlayerClient extends Observable {
 	
 	public void sendMessage() {
 		SendData data = new SendData();
+		data.roomId = roomId;
 		data.playerName = this.PlayerName;
 		data.status = this.status;
 		data.currentPos = currentPos;
-		data.rolled = rolled;
 		client.sendTCP(data);
-		System.out.println("Message Sent");
+		System.out.println("Message Sent(RoomID,Name,Status,CurrentPos) : " 
+		+ roomId +"," + PlayerName +"," + status + "," + currentPos);
 	}
 	 
 	public String getPlayerName() {
@@ -83,8 +89,16 @@ public class PlayerClient extends Observable {
 		PlayerClient playerClient = new PlayerClient();
 		MultiplayerUI ui = new MultiplayerUI(playerClient);
 		playerClient.addObserver(ui);
-
 	}
+
+	public String getRoomId() {
+		return roomId;
+	}
+
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
+	}
+	
 	
 }
 
