@@ -278,7 +278,7 @@ public class BoardUI extends JPanel {
 						}
 						addPlayerMoveMsg(
 								curName + " roll a die exceed the goal MOVE BACK for -> " + (newPos - (boardSize - 1)));
-						movePlayerHelper((boardSize - 1) - newPos, pos, 2 * (boardSize - 1) - newPos);
+						movePlayerHelper((boardSize - 1) - newPos, boardSize - 1, 2 * (boardSize - 1) - newPos);
 						// game.currentPlayerMove((boardSize - 1) - newPos);
 					} else {
 						addPlayerMoveMsg("----------------------------------------");
