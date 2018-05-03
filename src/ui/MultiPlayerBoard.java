@@ -18,6 +18,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 
+import online.PlayerClient;
 import snakeandladder.Game;
 import snakeandladder.Player;
 import square.BackwardSquare;
@@ -42,8 +43,10 @@ public class MultiPlayerBoard extends JPanel {
 	private static final int FRAME_HIEGHT = 840;
 
 	private Game game;
+	private PlayerClient playerClient;
 
-	public MultiPlayerBoard (int numPlayer) {
+	public MultiPlayerBoard (int numPlayer,PlayerClient playerClient) {
+		this.playerClient = playerClient;
 		this.game = new Game(numPlayer);
 		this.boardSize = game.getBoardSize();
 		frame = new JFrame("Snake and Ladder");
