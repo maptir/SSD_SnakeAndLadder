@@ -15,6 +15,7 @@ public class Game {
 	private boolean ended;
 
 	private List<Rolled> histories;
+	private boolean isReplayMode;
 
 	public Game(int numPlayer) {
 		currentPlayerIndex = 0;
@@ -23,6 +24,18 @@ public class Game {
 		board = new Board();
 		ended = false;
 		histories = new ArrayList<>();
+
+		for (int i = 0; i < players.length; i++) {
+			players[i] = new Player("P" + (i + 1));
+			board.addPiece(players[i].getPiece(), 0);
+		}
+	}
+
+	public void reset() {
+		currentPlayerIndex = 0;
+		die = new Die();
+		board = new Board();
+		ended = false;
 
 		for (int i = 0; i < players.length; i++) {
 			players[i] = new Player("P" + (i + 1));
@@ -56,7 +69,8 @@ public class Game {
 
 	public void currentPlayerMove(int steps) {
 		this.board.movePiece(currentPlayer().getPiece(), steps);
-		histories.add(new Rolled(currentPlayer(), steps, currentPlayerPosition()));
+		if (!isReplayMode)
+			histories.add(new Rolled(currentPlayer(), steps, currentPlayerPosition()));
 	}
 
 	public String currentPlayerName() {
@@ -89,5 +103,13 @@ public class Game {
 
 	public int getBoardSize() {
 		return board.getBoardSize();
+	}
+	
+	public boolean isReplayMode() {
+		return isReplayMode;
+	}
+	
+	public void setReplayMode(boolean isReplayMode) {
+		this.isReplayMode = isReplayMode;
 	}
 }

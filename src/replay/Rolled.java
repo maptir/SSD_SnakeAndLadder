@@ -8,8 +8,6 @@ public class Rolled {
 	private int rolled;
 	private int currentPos;
 
-
-
 	public Rolled(Player player, int rolled, int currentPos) {
 		this.player = player;
 		this.rolled = rolled;
@@ -23,10 +21,11 @@ public class Rolled {
 	public int getRolled() {
 		return rolled;
 	}
-	
+
 	public int getCurrentPos() {
 		return currentPos;
 	}
+
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
@@ -38,5 +37,4 @@ public class Rolled {
 	public void setCurrentPos(int currentPos) {
 		this.currentPos = currentPos;
 	}
-
 }
