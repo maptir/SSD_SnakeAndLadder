@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -39,6 +40,7 @@ public class BoardUI extends JPanel {
 	private JLabel[] players;
 	private static JFrame frame;
 	private int boardSize;
+	private int historiesIndex;
 
 	private static final int FRAME_WIDTH = 700;
 	private static final int FRAME_HIEGHT = 840;
@@ -48,6 +50,7 @@ public class BoardUI extends JPanel {
 	public BoardUI(int numPlayer) {
 		this.game = new Game(numPlayer);
 		this.boardSize = game.getBoardSize();
+		this.historiesIndex = 0;
 		frame = new JFrame("Snake and Ladder");
 		frame.getContentPane().add(this);
 		frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HIEGHT));
@@ -92,7 +95,7 @@ public class BoardUI extends JPanel {
 				restart();
 				game.reset();
 				game.setReplayMode(true);
-				replay(game.getHistories());
+				replay(game.getHistories().get(historiesIndex));
 			}
 		});
 		endLabel.add(replayButton);
@@ -173,6 +176,7 @@ public class BoardUI extends JPanel {
 	public void restart() {
 		int x = 0;
 		int y = 0;
+		historiesIndex = 0;
 		endLabel.setVisible(false);
 		rollButton.setVisible(true);
 		rollButton.setEnabled(true);
@@ -191,13 +195,16 @@ public class BoardUI extends JPanel {
 		dice.setIcon(null);
 	}
 
-	public void replay(List<Rolled> histories) {
-		dieRoll(histories.get(0).getRolled(), histories.get(0).getPlayer());
+	public void replay(Rolled rolled) {
+		System.out.println("START REPLAY -> " + rolled);
+		dieRoll(rolled.getRolled(), rolled.getPlayer());
 	}
 
 	public void dieRoll(int face, Player currentPlayer) {
 		addPlayerMoveMsg("The die is roll FACE = " + face);
-		dice.setIcon(diceImages[face - 1]);
+		if (face > 0 && face <= 6)
+			dice.setIcon(diceImages[face - 1]);
+		System.out.println(currentPlayer + " " + face);
 		movePlayer(face);
 		game.currentPlayerMove(face);
 		addPlayerMoveMsg(currentPlayer + " is at " + (game.currentPlayerPosition() + 1));
@@ -221,6 +228,7 @@ public class BoardUI extends JPanel {
 		}
 		int newPos = pos + steps;
 		// Reach Goal
+		System.out.println("POS : " + pos);
 		if (newPos >= boardSize) {
 			// Walk forward to goal and then backward if roll exceed boardSize.
 			movePlayerHelper(boardSize - pos - 1, pos, newPos);
@@ -240,8 +248,6 @@ public class BoardUI extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (i < Math.abs(steps)) {
-					System.out.println("STEPS " + steps);
-					System.out.println("POS " + pos);
 					if (Integer.signum(steps) > 0)
 						moveForward();
 					else
@@ -252,7 +258,6 @@ public class BoardUI extends JPanel {
 					((Timer) event.getSource()).stop();
 					sleep(100);
 					Square curSquare = game.getCurrentSquare(pos - 1);
-					System.out.println("SQUARE NUM : " + curSquare.getNumber());
 					if (curSquare instanceof FreezeSquare) {
 						game.currentPlayer().setFreeze(true);
 						addPlayerMoveMsg(curName + " found a TRAP !! FREEZE for 1 round.");
@@ -262,13 +267,13 @@ public class BoardUI extends JPanel {
 						addPlayerMoveMsg(curName + " found a LADDER at " + (newPos + 1) + " !! GOTO -> "
 								+ (ladderSquare.goTo() + 1));
 						movePlayer(ladderSquare.goTo() - newPos);
-						game.currentPlayerMove(ladderSquare.goTo() - newPos);
+						game.currentPlayerMoveSpecial(ladderSquare.goTo() - newPos);
 					} else if (curSquare instanceof SnakeSquare) {
 						SnakeSquare snakeSquare = (SnakeSquare) curSquare;
 						addPlayerMoveMsg(curName + " found a SNAKE at " + (newPos + 1) + " !! BACKTO -> "
 								+ (snakeSquare.goTo() + 1));
 						movePlayer(snakeSquare.goTo() - newPos);
-						game.currentPlayerMove(snakeSquare.goTo() - newPos);
+						game.currentPlayerMoveSpecial(snakeSquare.goTo() - newPos);
 					} else if (newPos >= boardSize) {
 						// Some player win
 						System.out.println(newPos);
@@ -279,20 +284,28 @@ public class BoardUI extends JPanel {
 						addPlayerMoveMsg(
 								curName + " roll a die exceed the goal MOVE BACK for -> " + (newPos - (boardSize - 1)));
 						movePlayerHelper((boardSize - 1) - newPos, boardSize - 1, 2 * (boardSize - 1) - newPos);
-						// game.currentPlayerMove((boardSize - 1) - newPos);
+						game.currentPlayerMoveSpecial((boardSize - 1) - newPos);
 					} else {
 						addPlayerMoveMsg("----------------------------------------");
 						rollButton.setEnabled(true);
+						System.out.println("SWITCH PLAYER");
 						game.switchPlayer();
 					}
 					// Replay
 					if (game.isReplayMode()) {
 						rollButton.setEnabled(false);
 						List<Rolled> histories = game.getHistories();
-						if (!histories.isEmpty()) {
-							replay(histories.subList(1, histories.size() - 1));
-							sleep(100);
+						if (historiesIndex < histories.size() - 1) {
+							System.out.println("---END REPLAY " + historiesIndex);
+							historiesIndex++;
+							game.switchPlayer();
+							replay(histories.get(historiesIndex));
+						} else {
+							System.out.println("WINNER");
+							replay(histories.get(historiesIndex + 1));
+							playerWin(histories.get(historiesIndex + 1).getPlayer());
 						}
+						sleep(150);
 					}
 				}
 			}

@@ -8,6 +8,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
 import ui.BoardUI;
+import ui.MultiplayerBoard;
 import ui.MultiplayerUI;
 
 public class PlayerClient extends Observable {
@@ -16,17 +17,17 @@ public class PlayerClient extends Observable {
 	private Client client;
 	private String PlayerName;
 	private String status;
-	private int currentPos;
 	private int rolled;
 	private String roomId;
+	private OnlineGame game;
 
 	public PlayerClient() throws IOException {
+		game = new OnlineGame();
 		client = new Client();
 		client.getKryo().register(SendData.class);
 		client.addListener(new PlayerClientListener());
 		client.start();
 		client.connect(5000, "127.0.0.1", 54333);
-		currentPos = 0;
 		rolled = 0;
 	}
 	
@@ -43,19 +44,37 @@ public class PlayerClient extends Observable {
 			if(o instanceof SendData) {
 				SendData receive = (SendData)o;
 				if(receive.status.equals("Ready")) {
-					BoardUI board = new BoardUI(4);
-					board.run();
-					setStatus("Play");
-					System.out.println("Play!!!!");
-					setChanged();
-					notifyObservers();
+					setStatus("RequestName");
+					sendMessage();
 				}
 				if(receive.status.equals("sendRoomId")) {
 					roomId = receive.roomId;
 				}
+				if(receive.status.equals("SendName")) {
+					System.out.println("Receive send Name");
+					game.addPlayer(receive.playerName);
+				}
+				if(receive.status.equals("Play")) {
+					setStatus("Play");
+					startGame();
+				}
+				if(receive.status.equals("SendRolled")) {
+					rolled = receive.rolled;
+					setChanged();
+					notifyObservers();
+				}
 			}
 		}
 
+	}
+	
+	private void startGame() {
+		System.out.println("Playing!!!!!");
+		MultiplayerBoard board = new MultiplayerBoard(game,this);
+		board.run();
+		setChanged();
+		notifyObservers();
+		this.addObserver(board);
 	}
 	
 	public void sendMessage() {
@@ -63,10 +82,10 @@ public class PlayerClient extends Observable {
 		data.roomId = roomId;
 		data.playerName = this.PlayerName;
 		data.status = this.status;
-		data.currentPos = currentPos;
+		data.rolled = rolled;
 		client.sendTCP(data);
-		System.out.println("Message Sent(RoomID,Name,Status,CurrentPos) : " 
-		+ roomId +"," + PlayerName +"," + status + "," + currentPos);
+		System.out.println("Message Sent(RoomID,Name,Status,Rolled) : " 
+		+ roomId +"," + PlayerName +"," + status + "," + rolled+"\n");
 	}
 	 
 	public String getPlayerName() {
@@ -98,6 +117,11 @@ public class PlayerClient extends Observable {
 	public void setRoomId(String roomId) {
 		this.roomId = roomId;
 	}
+
+	public int getRolled() {
+		return rolled;
+	}
+	
 	
 	
 }
