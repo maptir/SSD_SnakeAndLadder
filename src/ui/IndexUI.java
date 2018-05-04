@@ -14,6 +14,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import online.PlayerClient;
+
 public class IndexUI extends JPanel {
 
 	private static final int FRAME_WIDTH = 700;
@@ -59,7 +61,22 @@ public class IndexUI extends JPanel {
 			img.setImage(img.getImage().getScaledInstance(287, 92, Image.SCALE_SMOOTH));
 			startButtons[i] = new JButton(img);
 			startButtons[i].setBorderPainted(false);
-			startButtons[i].addActionListener(createBoard(i + 2));
+			if(i==3) {
+				startButtons[i].addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						PlayerClient playerClient;
+						try {
+							playerClient = new PlayerClient();
+							MultiplayerUI ui = new MultiplayerUI(playerClient);
+							playerClient.addObserver(ui);
+						} catch (IOException e1) {
+							System.out.println("Not found Server!!!!!");
+						}
+					}
+				});
+			}
+			else startButtons[i].addActionListener(createBoard(i + 2));
 			startButtons[i].setBounds(0, 0, 287, 92);
 			this.add(startButtons[i]);
 		}

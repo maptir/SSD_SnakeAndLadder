@@ -104,12 +104,6 @@ public class PlayerClient extends Observable {
 		this.status = status;
 	}
 
-	public static void main(String[] args) throws IOException, InterruptedException {
-		PlayerClient playerClient = new PlayerClient();
-		MultiplayerUI ui = new MultiplayerUI(playerClient);
-		playerClient.addObserver(ui);
-	}
-
 	public String getRoomId() {
 		return roomId;
 	}

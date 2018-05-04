@@ -3,6 +3,7 @@ package online;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -10,8 +11,9 @@ import com.esotericsoftware.kryonet.Server;
 
 import replay.Rolled;
 import snakeandladder.Die;
+import ui.ServerUI;
 
-public class GameServer {
+public class GameServer extends Observable {
 
 	private Server gameServer;
 	private List<GameRoom> gameList;
@@ -20,7 +22,7 @@ public class GameServer {
 	private int roomCount;
 	private Die die;
 
-	public GameServer() throws IOException {
+	public GameServer(ServerUI ui) throws IOException {
 		gameList = new ArrayList<>();
 		gameServer = new Server();
 		die = new Die();
@@ -30,6 +32,9 @@ public class GameServer {
 		gameServer.addListener(new GameServerListener());
 		gameServer.getKryo().register(SendData.class);
 		gameServer.start();
+		addObserver(ui);
+		setChanged();
+		notifyObservers("Server Start");
 
 		System.out.println("Server Start");
 	}
@@ -53,6 +58,8 @@ public class GameServer {
 			super.disconnected(connection);
 			clientConnections.remove(connection);
 			System.out.println("Client Disconnected");
+			setChanged();
+			notifyObservers("Client Disconnected");
 		}
 
 		@Override
@@ -61,7 +68,9 @@ public class GameServer {
 			if(o instanceof SendData) {
 				SendData receive = (SendData)o;
 				if(receive.status.equals("Connecting")){
-					System.out.println(receive.playerName + " Connected to RoomID:" + receive.roomId);
+					System.out.println(receive.playerName + " Connected to RoomID: " + receive.roomId);
+					setChanged();
+					notifyObservers(receive.playerName + " Connected to RoomID: " + receive.roomId);
 					GameRoom game = findRoomById(receive.roomId);
 					game.addName(receive.playerName);
 					if(game.isFull()) {
@@ -102,6 +111,8 @@ public class GameServer {
 	public GameRoom findAvailableRoom() {
 		if(gameList.size()==0) {
 			System.out.println("No Room Available! Create New One");
+			setChanged();
+			notifyObservers("No Room Available! Create New One");
 			GameRoom room = new GameRoom();
 			gameList.add(room);
 			return room;
@@ -126,11 +137,9 @@ public class GameServer {
 				return game;
 		}
 		System.out.println("Do not find Room with ID = "+id);
+		setChanged();
+		notifyObservers("Do not find Room with ID = "+id);
 		return null;
-	}
-
-	public static void main(String[] args) throws IOException {
-		GameServer server = new GameServer();
 	}
 
 }
