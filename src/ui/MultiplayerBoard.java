@@ -6,6 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -18,8 +21,9 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 
+import online.OnlineGame;
 import online.PlayerClient;
-import snakeandladder.Game;
+import replay.Rolled;
 import snakeandladder.Player;
 import square.BackwardSquare;
 import square.FreezeSquare;
@@ -27,7 +31,7 @@ import square.LadderSquare;
 import square.SnakeSquare;
 import square.Square;
 
-public class MultiPlayerBoard extends JPanel {
+public class MultiplayerBoard extends JPanel implements Observer {
 	private JButton rollButton;
 	private JTextArea textArea;
 	private JLabel dice;
@@ -42,13 +46,14 @@ public class MultiPlayerBoard extends JPanel {
 	private static final int FRAME_WIDTH = 700;
 	private static final int FRAME_HIEGHT = 840;
 
-	private Game game;
+	private OnlineGame game;
 	private PlayerClient playerClient;
-
-	public MultiPlayerBoard(int numPlayer,PlayerClient playerClient) {
-		this.game = new Game(numPlayer);
-		this.boardSize = game.getBoardSize();
+	
+	
+	public MultiplayerBoard(OnlineGame game, PlayerClient playerClient) {
+		this.game = game;
 		this.playerClient = playerClient;
+		this.boardSize = game.getBoardSize();
 		frame = new JFrame("Snake and Ladder");
 		frame.getContentPane().add(this);
 		frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HIEGHT));
@@ -90,7 +95,10 @@ public class MultiPlayerBoard extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				restart();
+				game.reset();
+				game.setReplayMode(true);
+				replay(game.getHistories());
 			}
 		});
 		endLabel.add(replayButton);
@@ -105,7 +113,9 @@ public class MultiPlayerBoard extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				restart();
+//				game = new OnlineGame(game.getNumPlayers());
+//				restart();
+				//later
 			}
 		});
 		endLabel.add(restartButton);
@@ -125,26 +135,15 @@ public class MultiPlayerBoard extends JPanel {
 				Player currentPlayer = game.currentPlayer();
 				addPlayerMoveMsg("Current Player is " + currentPlayer);
 				int face = game.currentPlayerRollDice();
-				addPlayerMoveMsg("The die is roll FACE = " + face);
-				dice.setIcon(diceImages[face - 1]);
-				movePiece(face);
-				game.currentPlayerMove(face);
-				addPlayerMoveMsg(currentPlayer + " is at " + (game.currentPlayerPosition() + 1));
-				if (game.currentPlayerWin()) {
-					addPlayerMoveMsg("Player " + currentPlayer.getName() + " WINS!");
-					endLabel.setVisible(true);
-					rollButton.setVisible(false);
-					game.end();
-				}
+				dieRoll(face, currentPlayer);
 			}
 		});
 		this.add(rollButton);
 
 		dice = new JLabel();
 		diceImages = new ImageIcon[6];
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 6; i++)
 			diceImages[i] = new ImageIcon(getClass().getResource("/res/dice" + (i + 1) + ".png"));
-		}
 		dice.setBounds(395, 697, 111, 111);
 		this.add(dice);
 
@@ -181,7 +180,6 @@ public class MultiPlayerBoard extends JPanel {
 	public void restart() {
 		int x = 0;
 		int y = 0;
-		game = new Game(game.getNumPlayers());
 		endLabel.setVisible(false);
 		rollButton.setVisible(true);
 		rollButton.setEnabled(true);
@@ -200,35 +198,57 @@ public class MultiPlayerBoard extends JPanel {
 		dice.setIcon(null);
 	}
 
-	public void movePiece(int steps) {
-		int pos = game.currentPlayerPosition();
-		String curName = game.currentPlayerName();
-		Square curSquare = game.getCurrentSquare(pos);
+	public void replay(List<Rolled> histories) {
+		dieRoll(histories.get(0).getRolled(), histories.get(0).getPlayer());
+	}
 
-		if (curSquare instanceof BackwardSquare) {
-			addPlayerMoveMsg(curName + " found a TRAP !! MOVE BACK for -> " + steps);
+	public void dieRoll(int face, Player currentPlayer) {
+		addPlayerMoveMsg("The die is roll FACE = " + face);
+		dice.setIcon(diceImages[face - 1]);
+		movePlayer(face);
+		game.currentPlayerMove(face);
+		addPlayerMoveMsg(currentPlayer + " is at " + (game.currentPlayerPosition() + 1));
+		if (game.currentPlayerWin())
+			playerWin(currentPlayer);
+	}
+
+	public void playerWin(Player currentPlayer) {
+		addPlayerMoveMsg("Player " + currentPlayer.getName() + " WINS!");
+		endLabel.setVisible(true);
+		rollButton.setVisible(false);
+		game.setReplayMode(false);
+		game.end();
+	}
+
+	public void movePlayer(int steps) {
+		int pos = game.currentPlayerPosition();
+		if (game.getCurrentSquare(pos) instanceof BackwardSquare) {
+			addPlayerMoveMsg(game.currentPlayerName() + " found a TRAP !! MOVE BACK for -> " + steps);
 			steps *= -1;
 		}
 		int newPos = pos + steps;
 		// Reach Goal
 		if (newPos >= boardSize) {
 			// Walk forward to goal and then backward if roll exceed boardSize.
-			movePlayer(boardSize - pos - 1, newPos, curName, curSquare);
+			movePlayerHelper(boardSize - pos - 1, pos, newPos);
 		} else {
-			movePlayer(steps, newPos, curName, curSquare);
+			movePlayerHelper(steps, pos, newPos);
 		}
 	}
 
-	public void movePlayer(int steps, int newPos, String curName, Square curSquare) {
-		Timer timer = new Timer(100, new ActionListener() {
+	public void movePlayerHelper(int steps, final int fPos, int newPos) {
+		Timer timer = new Timer(50, new ActionListener() {
 			JLabel curPlayer = players[game.currentPlayerIndex()];
-			int pos = game.currentPlayerPosition() + 1;
+			String curName = game.currentPlayerName();
 			int i = 0;
 			int gap = 64;
+			int pos = fPos + 1;
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (i < Math.abs(steps)) {
+					System.out.println("STEPS " + steps);
+					System.out.println("POS " + pos);
 					if (Integer.signum(steps) > 0)
 						moveForward();
 					else
@@ -237,7 +257,9 @@ public class MultiPlayerBoard extends JPanel {
 					i++;
 				} else {
 					((Timer) event.getSource()).stop();
+					sleep(100);
 					Square curSquare = game.getCurrentSquare(pos - 1);
+					System.out.println("SQUARE NUM : " + curSquare.getNumber());
 					if (curSquare instanceof FreezeSquare) {
 						game.currentPlayer().setFreeze(true);
 						addPlayerMoveMsg(curName + " found a TRAP !! FREEZE for 1 round.");
@@ -246,25 +268,38 @@ public class MultiPlayerBoard extends JPanel {
 						LadderSquare ladderSquare = (LadderSquare) curSquare;
 						addPlayerMoveMsg(curName + " found a LADDER at " + (newPos + 1) + " !! GOTO -> "
 								+ (ladderSquare.goTo() + 1));
-						movePiece(ladderSquare.goTo() - newPos);
+						movePlayer(ladderSquare.goTo() - newPos);
 						game.currentPlayerMove(ladderSquare.goTo() - newPos);
 					} else if (curSquare instanceof SnakeSquare) {
 						SnakeSquare snakeSquare = (SnakeSquare) curSquare;
 						addPlayerMoveMsg(curName + " found a SNAKE at " + (newPos + 1) + " !! BACKTO -> "
 								+ (snakeSquare.goTo() + 1));
-						movePiece(snakeSquare.goTo() - newPos);
+						movePlayer(snakeSquare.goTo() - newPos);
 						game.currentPlayerMove(snakeSquare.goTo() - newPos);
 					} else if (newPos >= boardSize) {
 						// Some player win
-						if (newPos - 1 == boardSize)
+						System.out.println(newPos);
+						if (pos - 1 == boardSize) {
+							System.out.println("WIN");
 							return;
+						}
 						addPlayerMoveMsg(
 								curName + " roll a die exceed the goal MOVE BACK for -> " + (newPos - (boardSize - 1)));
-						movePlayer((boardSize - 1) - newPos, 2 * (boardSize - 1) - newPos, curName, curSquare);
+						movePlayerHelper((boardSize - 1) - newPos, boardSize - 1, 2 * (boardSize - 1) - newPos);
+						// game.currentPlayerMove((boardSize - 1) - newPos);
 					} else {
 						addPlayerMoveMsg("----------------------------------------");
 						rollButton.setEnabled(true);
 						game.switchPlayer();
+					}
+					// Replay
+					if (game.isReplayMode()) {
+						rollButton.setEnabled(false);
+						List<Rolled> histories = game.getHistories();
+						if (!histories.isEmpty()) {
+							replay(histories.subList(1, histories.size() - 1));
+							sleep(100);
+						}
 					}
 				}
 			}
@@ -280,7 +315,6 @@ public class MultiPlayerBoard extends JPanel {
 			}
 
 			public void moveBackward() {
-				System.out.println(steps);
 				if (pos % 10 == 1) {
 					curPlayer.setLocation(curPlayer.getX(), curPlayer.getY() + gap);
 				} else if (((pos - 1) / 10) % 2 == 0) {
@@ -293,7 +327,22 @@ public class MultiPlayerBoard extends JPanel {
 		timer.start();
 	}
 
+	public void sleep(int mSecs) {
+		try {
+			Thread.sleep(mSecs);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void addPlayerMoveMsg(String msg) {
 		textArea.append(msg + "\n");
 	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

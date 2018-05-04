@@ -60,13 +60,27 @@ public class GameServer {
 				if(receive.status.equals("Connecting")){
 					System.out.println(receive.playerName + " Connected to RoomID:" + receive.roomId);
 					GameRoom game = findRoomById(receive.roomId);
+					game.addName(receive.playerName);
 					if(game.isFull()) {
 						for(Connection playerConnection : game.getPlayerConnection()) {
 							SendData data = new SendData();
 							data.status = "Ready";
 							playerConnection.sendTCP(data);
 						}
+					} 
+				}
+				if(receive.status.equals("RequestName")) {
+					GameRoom game = findRoomById(receive.roomId);
+					for(String name : game.getNameList()) {
+						SendData data = new SendData();
+						data.playerName = name;
+						data.status = "SendName";
+						connection.sendTCP(data);
 					}
+					SendData playRequest = new SendData();
+					playRequest.status = "Play";
+					connection.sendTCP(playRequest);
+					
 				}
 			}
 		}

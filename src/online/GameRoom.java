@@ -12,9 +12,19 @@ public class GameRoom {
 	private String roomID;
 //	private OnlineGame game;
 	private List<Connection> playerConnections;
+	private List<String> nameList;
 	
 	public GameRoom() {
 		playerConnections = new ArrayList<>();
+		nameList = new ArrayList<>();
+	}
+	
+	public void addName(String name) {
+		nameList.add(name);
+	}
+	
+	public List<String> getNameList() {
+		return nameList;
 	}
 
 	public String getRoomID() {
