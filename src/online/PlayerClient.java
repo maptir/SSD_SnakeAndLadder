@@ -17,7 +17,6 @@ public class PlayerClient extends Observable {
 	private Client client;
 	private String PlayerName;
 	private String status;
-	private int currentPos;
 	private int rolled;
 	private String roomId;
 	private OnlineGame game;
@@ -29,7 +28,6 @@ public class PlayerClient extends Observable {
 		client.addListener(new PlayerClientListener());
 		client.start();
 		client.connect(5000, "127.0.0.1", 54333);
-		currentPos = 0;
 		rolled = 0;
 	}
 	
@@ -60,6 +58,11 @@ public class PlayerClient extends Observable {
 					setStatus("Play");
 					startGame();
 				}
+				if(receive.status.equals("SendRolled")) {
+					rolled = receive.rolled;
+					setChanged();
+					notifyObservers();
+				}
 			}
 		}
 
@@ -71,6 +74,7 @@ public class PlayerClient extends Observable {
 		board.run();
 		setChanged();
 		notifyObservers();
+		this.addObserver(board);
 	}
 	
 	public void sendMessage() {
@@ -78,10 +82,10 @@ public class PlayerClient extends Observable {
 		data.roomId = roomId;
 		data.playerName = this.PlayerName;
 		data.status = this.status;
-		data.currentPos = currentPos;
+		data.rolled = rolled;
 		client.sendTCP(data);
-		System.out.println("Message Sent(RoomID,Name,Status,CurrentPos) : " 
-		+ roomId +"," + PlayerName +"," + status + "," + currentPos+"\n");
+		System.out.println("Message Sent(RoomID,Name,Status,Rolled) : " 
+		+ roomId +"," + PlayerName +"," + status + "," + rolled+"\n");
 	}
 	 
 	public String getPlayerName() {
@@ -113,6 +117,11 @@ public class PlayerClient extends Observable {
 	public void setRoomId(String roomId) {
 		this.roomId = roomId;
 	}
+
+	public int getRolled() {
+		return rolled;
+	}
+	
 	
 	
 }

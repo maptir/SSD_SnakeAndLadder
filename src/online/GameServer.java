@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 import replay.Rolled;
+import snakeandladder.Die;
 
 public class GameServer {
 
@@ -17,10 +18,12 @@ public class GameServer {
 	private List<Connection> clientConnections;
 	private List<SendData> rollHistory = new ArrayList<>();
 	private int roomCount;
+	private Die die;
 
 	public GameServer() throws IOException {
 		gameList = new ArrayList<>();
 		gameServer = new Server();
+		die = new Die();
 		roomCount = 1;
 		clientConnections = new ArrayList<Connection>();
 		gameServer.bind(54333);
@@ -80,7 +83,16 @@ public class GameServer {
 					SendData playRequest = new SendData();
 					playRequest.status = "Play";
 					connection.sendTCP(playRequest);
-					
+				}
+				if(receive.status.equals("Roll")) {
+					GameRoom game = findRoomById(receive.roomId);
+					SendData data = new SendData();
+					die.roll();
+					data.rolled = die.getFace();
+					data.status = "SendRolled";
+					for(Connection con :game.getPlayerConnection()) {
+						con.sendTCP(data);
+					}
 				}
 			}
 		}
