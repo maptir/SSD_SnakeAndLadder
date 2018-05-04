@@ -22,17 +22,11 @@ public class OnlineGame {
 	private boolean isReplayMode;
 
 	public OnlineGame() {
-		System.out.println("INIT ONLINE GAME");
-		currentPlayerIndex = 0;
-		//Specify 4 for online
 		players = new ArrayList<Player>();
-		die = new Die();
-		board = new Board();
-		ended = false;
 		histories = new ArrayList<>();
-		
+		reset();
 	}
-	
+
 	public void addPlayer(String name) {
 		System.out.println("Add Player");
 		Player player = new Player(name);
@@ -40,17 +34,17 @@ public class OnlineGame {
 		players.add(player);
 		System.out.println("Add Player : "+name);
 	}
-
+	
 	public void reset() {
 		currentPlayerIndex = 0;
 		die = new Die();
 		board = new Board();
 		ended = false;
-		//Later
-//		for (int i = 0; i < players.length; i++) {
-//			players[i] = new Player("P" + (i + 1));
-//			board.addPiece(players[i].getPiece(), 0);
-//		}
+		isReplayMode = false;
+
+		for (int i = 0; i < players.size(); i++) {
+			board.addPiece(players.get(i).getPiece(), 0);
+		}
 	}
 
 	public boolean isEnd() {
@@ -80,7 +74,11 @@ public class OnlineGame {
 	public void currentPlayerMove(int steps) {
 		this.board.movePiece(currentPlayer().getPiece(), steps);
 		if (!isReplayMode)
-			histories.add(new Rolled(currentPlayer(), steps, currentPlayerPosition()));
+			histories.add(new Rolled(currentPlayer(), steps));
+	}
+
+	public void currentPlayerMoveSpecial(int steps) {
+		this.board.movePiece(currentPlayer().getPiece(), steps);
 	}
 
 	public String currentPlayerName() {
@@ -114,13 +112,13 @@ public class OnlineGame {
 	public int getBoardSize() {
 		return board.getBoardSize();
 	}
-	
+
 	public boolean isReplayMode() {
 		return isReplayMode;
 	}
-	
+
 	public void setReplayMode(boolean isReplayMode) {
 		this.isReplayMode = isReplayMode;
 	}
-	
 }
+

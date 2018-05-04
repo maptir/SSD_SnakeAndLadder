@@ -24,6 +24,7 @@ import javax.swing.Timer;
 import online.OnlineGame;
 import online.PlayerClient;
 import replay.Rolled;
+import snakeandladder.Game;
 import snakeandladder.Player;
 import square.BackwardSquare;
 import square.FreezeSquare;
@@ -32,6 +33,7 @@ import square.SnakeSquare;
 import square.Square;
 
 public class MultiplayerBoard extends JPanel implements Observer {
+	
 	private JButton rollButton;
 	private JTextArea textArea;
 	private JLabel dice;
@@ -42,19 +44,21 @@ public class MultiplayerBoard extends JPanel implements Observer {
 	private JLabel[] players;
 	private static JFrame frame;
 	private int boardSize;
+	private int historiesIndex;
 
 	private static final int FRAME_WIDTH = 700;
 	private static final int FRAME_HIEGHT = 840;
 
 	private OnlineGame game;
 	private PlayerClient playerClient;
-	
-	
-	public MultiplayerBoard(OnlineGame game, PlayerClient playerClient) {
+
+	public MultiplayerBoard(OnlineGame game,PlayerClient client) {
 		this.game = game;
-		this.playerClient = playerClient;
+		System.out.println(game.currentPlayerName());
+		this.playerClient = client;
 		this.boardSize = game.getBoardSize();
-		frame = new JFrame("Snake and Ladder");
+		this.historiesIndex = 0;
+		frame = new JFrame(playerClient.getPlayerName());
 		frame.getContentPane().add(this);
 		frame.setSize(new Dimension(FRAME_WIDTH, FRAME_HIEGHT));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,7 +102,7 @@ public class MultiplayerBoard extends JPanel implements Observer {
 				restart();
 				game.reset();
 				game.setReplayMode(true);
-				replay(game.getHistories());
+				replay(game.getHistories().get(historiesIndex));
 			}
 		});
 		endLabel.add(replayButton);
@@ -113,9 +117,7 @@ public class MultiplayerBoard extends JPanel implements Observer {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				game = new OnlineGame(game.getNumPlayers());
-//				restart();
-				//later
+				restart();
 			}
 		});
 		endLabel.add(restartButton);
@@ -132,12 +134,15 @@ public class MultiplayerBoard extends JPanel implements Observer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				rollButton.setEnabled(false);
-				Player currentPlayer = game.currentPlayer();
-				addPlayerMoveMsg("Current Player is " + currentPlayer);
-				int face = game.currentPlayerRollDice();
-				dieRoll(face, currentPlayer);
+				playerClient.setStatus("Roll");
+				playerClient.sendMessage();
 			}
 		});
+		//Check First Player
+		if(playerClient.getPlayerName().equals(game.currentPlayerName()))
+			rollButton.setEnabled(true);
+		else rollButton.setEnabled(false);
+		
 		this.add(rollButton);
 
 		dice = new JLabel();
@@ -178,33 +183,21 @@ public class MultiplayerBoard extends JPanel implements Observer {
 	}
 
 	public void restart() {
-		int x = 0;
-		int y = 0;
-		endLabel.setVisible(false);
-		rollButton.setVisible(true);
-		rollButton.setEnabled(true);
-		for (int i = 0; i < players.length; i++) {
-			if (i == 0 || i == 1)
-				x = 50;
-			if (i == 2 || i == 4)
-				x = 18;
-			if (i == 0 || i == 2)
-				y = 630;
-			if (i == 1 || i == 3)
-				y = 600;
-			players[i].setLocation(x, y);
-		}
-		textArea.setText("");
-		dice.setIcon(null);
+		frame.dispose();
+		MultiplayerUI ui = new MultiplayerUI(playerClient);
+		playerClient.addObserver(ui);
 	}
 
-	public void replay(List<Rolled> histories) {
-		dieRoll(histories.get(0).getRolled(), histories.get(0).getPlayer());
+	public void replay(Rolled rolled) {
+		System.out.println("START REPLAY -> " + rolled);
+		dieRoll(rolled.getRolled(), rolled.getPlayer());
 	}
 
 	public void dieRoll(int face, Player currentPlayer) {
 		addPlayerMoveMsg("The die is roll FACE = " + face);
-		dice.setIcon(diceImages[face - 1]);
+		if (face > 0 && face <= 6)
+			dice.setIcon(diceImages[face - 1]);
+		System.out.println(currentPlayer + " " + face);
 		movePlayer(face);
 		game.currentPlayerMove(face);
 		addPlayerMoveMsg(currentPlayer + " is at " + (game.currentPlayerPosition() + 1));
@@ -228,6 +221,7 @@ public class MultiplayerBoard extends JPanel implements Observer {
 		}
 		int newPos = pos + steps;
 		// Reach Goal
+		System.out.println("POS : " + pos);
 		if (newPos >= boardSize) {
 			// Walk forward to goal and then backward if roll exceed boardSize.
 			movePlayerHelper(boardSize - pos - 1, pos, newPos);
@@ -247,8 +241,6 @@ public class MultiplayerBoard extends JPanel implements Observer {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				if (i < Math.abs(steps)) {
-					System.out.println("STEPS " + steps);
-					System.out.println("POS " + pos);
 					if (Integer.signum(steps) > 0)
 						moveForward();
 					else
@@ -259,7 +251,6 @@ public class MultiplayerBoard extends JPanel implements Observer {
 					((Timer) event.getSource()).stop();
 					sleep(100);
 					Square curSquare = game.getCurrentSquare(pos - 1);
-					System.out.println("SQUARE NUM : " + curSquare.getNumber());
 					if (curSquare instanceof FreezeSquare) {
 						game.currentPlayer().setFreeze(true);
 						addPlayerMoveMsg(curName + " found a TRAP !! FREEZE for 1 round.");
@@ -269,13 +260,13 @@ public class MultiplayerBoard extends JPanel implements Observer {
 						addPlayerMoveMsg(curName + " found a LADDER at " + (newPos + 1) + " !! GOTO -> "
 								+ (ladderSquare.goTo() + 1));
 						movePlayer(ladderSquare.goTo() - newPos);
-						game.currentPlayerMove(ladderSquare.goTo() - newPos);
+						game.currentPlayerMoveSpecial(ladderSquare.goTo() - newPos);
 					} else if (curSquare instanceof SnakeSquare) {
 						SnakeSquare snakeSquare = (SnakeSquare) curSquare;
 						addPlayerMoveMsg(curName + " found a SNAKE at " + (newPos + 1) + " !! BACKTO -> "
 								+ (snakeSquare.goTo() + 1));
 						movePlayer(snakeSquare.goTo() - newPos);
-						game.currentPlayerMove(snakeSquare.goTo() - newPos);
+						game.currentPlayerMoveSpecial(snakeSquare.goTo() - newPos);
 					} else if (newPos >= boardSize) {
 						// Some player win
 						System.out.println(newPos);
@@ -286,20 +277,31 @@ public class MultiplayerBoard extends JPanel implements Observer {
 						addPlayerMoveMsg(
 								curName + " roll a die exceed the goal MOVE BACK for -> " + (newPos - (boardSize - 1)));
 						movePlayerHelper((boardSize - 1) - newPos, boardSize - 1, 2 * (boardSize - 1) - newPos);
-						// game.currentPlayerMove((boardSize - 1) - newPos);
+						game.currentPlayerMoveSpecial((boardSize - 1) - newPos);
 					} else {
 						addPlayerMoveMsg("----------------------------------------");
-						rollButton.setEnabled(true);
+						System.out.println("SWITCH PLAYER");
 						game.switchPlayer();
+						if(playerClient.getPlayerName().equals(game.currentPlayerName()))
+							rollButton.setEnabled(true);
+						else rollButton.setEnabled(false);
+						
 					}
 					// Replay
 					if (game.isReplayMode()) {
 						rollButton.setEnabled(false);
 						List<Rolled> histories = game.getHistories();
-						if (!histories.isEmpty()) {
-							replay(histories.subList(1, histories.size() - 1));
-							sleep(100);
+						if (historiesIndex < histories.size() - 1) {
+							System.out.println("---END REPLAY " + historiesIndex);
+							historiesIndex++;
+							game.switchPlayer();
+							replay(histories.get(historiesIndex));
+						} else {
+							System.out.println("WINNER");
+							replay(histories.get(historiesIndex + 1));
+							playerWin(histories.get(historiesIndex + 1).getPlayer());
 						}
+						sleep(150);
 					}
 				}
 			}
@@ -341,8 +343,10 @@ public class MultiplayerBoard extends JPanel implements Observer {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
+		Player currentPlayer = game.currentPlayer();
+		addPlayerMoveMsg("Current Player is " + currentPlayer);
+		int face = playerClient.getRolled();
+		dieRoll(face, currentPlayer);
 	}
-
+	
 }
