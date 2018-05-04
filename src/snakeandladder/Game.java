@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import replay.Rolled;
+import square.Square;
 
 public class Game {
 	private Player[] players;
@@ -14,14 +15,27 @@ public class Game {
 	private boolean ended;
 
 	private List<Rolled> histories;
+	private boolean isReplayMode;
 
-	public Game(int numPlayer, BoardView bView) {
+	public Game(int numPlayer) {
 		currentPlayerIndex = 0;
 		players = new Player[numPlayer];
 		die = new Die();
-		board = new Board(bView);
+		board = new Board();
 		ended = false;
 		histories = new ArrayList<>();
+
+		for (int i = 0; i < players.length; i++) {
+			players[i] = new Player("P" + (i + 1));
+			board.addPiece(players[i].getPiece(), 0);
+		}
+	}
+
+	public void reset() {
+		currentPlayerIndex = 0;
+		die = new Die();
+		board = new Board();
+		ended = false;
 
 		for (int i = 0; i < players.length; i++) {
 			players[i] = new Player("P" + (i + 1));
@@ -47,11 +61,16 @@ public class Game {
 
 	public void switchPlayer() {
 		currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+		if (currentPlayer().isFreeze()) {
+			currentPlayer().setFreeze(false);
+			switchPlayer();
+		}
 	}
 
 	public void currentPlayerMove(int steps) {
-		this.board.movePiece(currentPlayer(), currentPlayer().getPiece(), steps);
-		histories.add(new Rolled(currentPlayer(), steps, currentPlayerPosition()));
+		this.board.movePiece(currentPlayer().getPiece(), steps);
+		if (!isReplayMode)
+			histories.add(new Rolled(currentPlayer(), steps, currentPlayerPosition()));
 	}
 
 	public String currentPlayerName() {
@@ -76,5 +95,21 @@ public class Game {
 
 	public List<Rolled> getHistories() {
 		return histories;
+	}
+
+	public Square getCurrentSquare(int pos) {
+		return board.getSquare(pos);
+	}
+
+	public int getBoardSize() {
+		return board.getBoardSize();
+	}
+	
+	public boolean isReplayMode() {
+		return isReplayMode;
+	}
+	
+	public void setReplayMode(boolean isReplayMode) {
+		this.isReplayMode = isReplayMode;
 	}
 }

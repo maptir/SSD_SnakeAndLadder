@@ -22,7 +22,7 @@ public class Player {
 	}
 
 	public void movePiece(Board board, int steps) {
-		board.movePiece(this, piece, steps);
+		board.movePiece(piece, steps);
 	}
 
 	public Piece getPiece() {
