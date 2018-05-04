@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -52,15 +53,25 @@ public class IndexUI extends JPanel {
 		this.setBounds(0, 0, FRAME_WIDTH, FRAME_HIEGHT);
 		this.setLayout(null);
 
-		startButtons = new JButton[3];
+		startButtons = new JButton[4];
 		for (int i = 0; i < startButtons.length; i++) {
 			img = new ImageIcon(getClass().getResource("/res/" + (i + 2) + "player.png"));
+			img.setImage(img.getImage().getScaledInstance(287, 92, Image.SCALE_SMOOTH));
 			startButtons[i] = new JButton(img);
 			startButtons[i].setBorderPainted(false);
 			startButtons[i].addActionListener(createBoard(i + 2));
-			startButtons[i].setBounds(178, 390 + (140 * i), 344, 110);
+			startButtons[i].setBounds(0, 0, 287, 92);
 			this.add(startButtons[i]);
 		}
+		int x = 50;
+		int y = 470;
+		int dx = 320;
+		int dy = 140;
+		startButtons[0].setLocation(x, y);
+		startButtons[1].setLocation(x + dx, y);
+		startButtons[2].setLocation(x, y + dy);
+		startButtons[3].setLocation(x + dx, y + dy);
+
 	}
 
 	public ActionListener createBoard(int numPlayer) {
