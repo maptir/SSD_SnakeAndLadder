@@ -206,7 +206,7 @@ public class BoardUI extends JPanel {
 			dice.setIcon(diceImages[face - 1]);
 		System.out.println(currentPlayer + " " + face);
 		movePlayer(face);
-		game.currentPlayerMove(face, false);
+		game.currentPlayerMove(face);
 		addPlayerMoveMsg(currentPlayer + " is at " + (game.currentPlayerPosition() + 1));
 		if (game.currentPlayerWin())
 			playerWin(currentPlayer);
@@ -267,13 +267,13 @@ public class BoardUI extends JPanel {
 						addPlayerMoveMsg(curName + " found a LADDER at " + (newPos + 1) + " !! GOTO -> "
 								+ (ladderSquare.goTo() + 1));
 						movePlayer(ladderSquare.goTo() - newPos);
-						game.currentPlayerMove(ladderSquare.goTo() - newPos, true);
+						game.currentPlayerMoveSpecial(ladderSquare.goTo() - newPos);
 					} else if (curSquare instanceof SnakeSquare) {
 						SnakeSquare snakeSquare = (SnakeSquare) curSquare;
 						addPlayerMoveMsg(curName + " found a SNAKE at " + (newPos + 1) + " !! BACKTO -> "
 								+ (snakeSquare.goTo() + 1));
 						movePlayer(snakeSquare.goTo() - newPos);
-						game.currentPlayerMove(snakeSquare.goTo() - newPos, true);
+						game.currentPlayerMoveSpecial(snakeSquare.goTo() - newPos);
 					} else if (newPos >= boardSize) {
 						// Some player win
 						System.out.println(newPos);
@@ -284,7 +284,7 @@ public class BoardUI extends JPanel {
 						addPlayerMoveMsg(
 								curName + " roll a die exceed the goal MOVE BACK for -> " + (newPos - (boardSize - 1)));
 						movePlayerHelper((boardSize - 1) - newPos, boardSize - 1, 2 * (boardSize - 1) - newPos);
-						game.currentPlayerMove((boardSize - 1) - newPos, false);
+						game.currentPlayerMoveSpecial((boardSize - 1) - newPos);
 					} else {
 						addPlayerMoveMsg("----------------------------------------");
 						rollButton.setEnabled(true);

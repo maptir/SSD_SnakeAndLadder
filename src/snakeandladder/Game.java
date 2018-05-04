@@ -60,10 +60,14 @@ public class Game {
 		}
 	}
 
-	public void currentPlayerMove(int steps, boolean isSpecialSquare) {
+	public void currentPlayerMove(int steps) {
 		this.board.movePiece(currentPlayer().getPiece(), steps);
-		if (!isReplayMode && !isSpecialSquare)
+		if (!isReplayMode)
 			histories.add(new Rolled(currentPlayer(), steps));
+	}
+
+	public void currentPlayerMoveSpecial(int steps) {
+		this.board.movePiece(currentPlayer().getPiece(), steps);
 	}
 
 	public String currentPlayerName() {
