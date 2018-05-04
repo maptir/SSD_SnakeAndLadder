@@ -54,6 +54,7 @@ public class ServerUI extends JFrame implements Observer {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					openServer();
+					button.setEnabled(false);
 				} catch (IOException e1) {
 					System.out.println("Can't open server!!!!");
 				}

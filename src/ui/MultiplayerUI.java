@@ -38,7 +38,7 @@ public class MultiplayerUI extends JFrame implements Observer {
 	
 	private void initLayout() {
 		panel = new JPanel();
-		panel.setPreferredSize(new Dimension(200, 100));
+		panel.setPreferredSize(new Dimension(300, 100));
 		panel.setLayout(new BorderLayout());
 		label = new JLabel("Set Player Name");
 		label.setHorizontalAlignment(SwingConstants.CENTER);

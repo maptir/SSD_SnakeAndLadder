@@ -70,6 +70,7 @@ public class IndexUI extends JPanel {
 							playerClient = new PlayerClient();
 							MultiplayerUI ui = new MultiplayerUI(playerClient);
 							playerClient.addObserver(ui);
+							frame.dispose();
 						} catch (IOException e1) {
 							System.out.println("Not found Server!!!!!");
 						}
