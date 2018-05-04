@@ -45,7 +45,7 @@ public class ConsoleUI {
 	}
 
 	public void restart(Game game) {
-//		game = new Game(game.getNumPlayers());
+		// game = new Game(game.getNumPlayers());
 		start(game);
 	}
 
@@ -53,13 +53,12 @@ public class ConsoleUI {
 		for (Rolled rolled : game.getHistories()) {
 			System.out.println("Current Player is " + rolled.getPlayer());
 			System.out.println("The die is roll FACE = " + rolled.getRolled());
-			System.out.println(rolled.getPlayer() + " is at " + rolled.getCurrentPos());
 		}
 	}
 
 	public static void main(String[] args) {
 		ConsoleUI ui = new ConsoleUI();
-//		Game game = new Game(2);
-//		ui.start(game);
+		// Game game = new Game(2);
+		// ui.start(game);
 	}
 }
