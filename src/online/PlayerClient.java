@@ -52,7 +52,8 @@ public class PlayerClient extends Observable {
 				if(receive.status.equals("sendRoomId")) {
 					roomId = receive.roomId;
 				}
-				if(receive.status.equals("SendData")) {
+				if(receive.status.equals("SendName")) {
+					System.out.println("Receive send Name");
 					game.addPlayer(receive.playerName);
 				}
 				if(receive.status.equals("Play")) {

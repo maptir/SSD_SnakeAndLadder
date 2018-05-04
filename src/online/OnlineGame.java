@@ -22,7 +22,7 @@ public class OnlineGame {
 	private boolean isReplayMode;
 
 	public OnlineGame() {
-		
+		System.out.println("INIT ONLINE GAME");
 		currentPlayerIndex = 0;
 		//Specify 4 for online
 		players = new ArrayList<Player>();
@@ -34,6 +34,7 @@ public class OnlineGame {
 	}
 	
 	public void addPlayer(String name) {
+		System.out.println("Add Player");
 		Player player = new Player(name);
 		board.addPiece(player.getPiece(), 0);
 		players.add(player);
