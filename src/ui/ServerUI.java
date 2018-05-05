@@ -31,6 +31,8 @@ public class ServerUI extends JFrame implements Observer {
 	private JTextArea textarea;
 	private JButton button;
 	private JScrollPane scroll;
+	private JTextField textfield;
+
 	
 	public ServerUI() throws IOException {
 		super("Snake & Ladder Server");
@@ -48,6 +50,9 @@ public class ServerUI extends JFrame implements Observer {
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		textarea = new JTextArea("-------------Server Status------------\n",300,300);
 		scroll = new JScrollPane(textarea);
+		textfield = new JTextField("Enter Port Here");
+		textfield.setHorizontalAlignment(JTextField.CENTER);
+		JPanel southern = new JPanel(new BorderLayout());
 		button = new JButton("Open");
 		button.addActionListener(new ActionListener() {		
 			@Override
@@ -60,14 +65,16 @@ public class ServerUI extends JFrame implements Observer {
 				}
 			}
 		});
+		southern.add(textfield, BorderLayout.CENTER);
+		southern.add(button, BorderLayout.SOUTH);
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(scroll, BorderLayout.CENTER);
-		panel.add(button, BorderLayout.SOUTH);
+		panel.add(southern, BorderLayout.SOUTH);
 		this.add(panel);
 	}
 	
 	private void openServer() throws IOException {
-		this.server = new GameServer(this);
+		this.server = new GameServer(this,Integer.parseInt(textfield.getText()));
 	}
 
 

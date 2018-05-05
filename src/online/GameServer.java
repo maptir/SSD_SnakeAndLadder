@@ -22,19 +22,19 @@ public class GameServer extends Observable {
 	private int roomCount;
 	private Die die;
 
-	public GameServer(ServerUI ui) throws IOException {
+	public GameServer(ServerUI ui,int binding) throws IOException {
 		gameList = new ArrayList<>();
 		gameServer = new Server();
 		die = new Die();
 		roomCount = 1;
 		clientConnections = new ArrayList<Connection>();
-		gameServer.bind(22222);
+		gameServer.bind(binding);
 		gameServer.addListener(new GameServerListener());
 		gameServer.getKryo().register(SendData.class);
 		gameServer.start();
 		addObserver(ui);
 		setChanged();
-		notifyObservers("Server Start");
+		notifyObservers("Server Start at port: " + binding);
 
 		System.out.println("Server Start");
 	}

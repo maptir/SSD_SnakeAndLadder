@@ -118,7 +118,9 @@ public class MultiplayerBoard extends JPanel implements Observer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				restart();
-			}
+				game.reset();
+				game.setReplayMode(true);
+				replay(game.getHistories().get(historiesIndex));			}
 		});
 		endLabel.add(restartButton);
 		endLabel.setVisible(false);
