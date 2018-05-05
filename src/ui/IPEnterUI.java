@@ -35,7 +35,7 @@ public class IPEnterUI extends JFrame implements Observer {
 		pack();
 		setVisible(true);
 	}
-	
+
 	private void initLayout() {
 		panel = new JPanel();
 		panel.setPreferredSize(new Dimension(300, 100));
@@ -56,31 +56,28 @@ public class IPEnterUI extends JFrame implements Observer {
 				} catch (IOException e1) {
 					textfield.setText("Wrong IP");
 				}
-				MultiplayerUI ui = new MultiplayerUI(playerClient);
-				playerClient.addObserver(ui);
-				change();
 			}
 		});
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(textfield, BorderLayout.CENTER);
 		panel.add(button, BorderLayout.SOUTH);
 		this.add(panel);
-	}
+		}
 
-	private void close() {
-		this.dispose();
-	}
-	
-	private void change() {
-		panel.removeAll();
-		label.setText("waiting........");
-		panel.add(label);
-		this.repaint();
-	}
+		private void close() {
+			this.dispose();
+		}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		close();
-	}
+		private void change() {
+			panel.removeAll();
+			label.setText("waiting........");
+			panel.add(label);
+			this.repaint();
+		}
 
-}
+		@Override
+		public void update(Observable o, Object arg) {
+			close();
+		}
+
+	}
