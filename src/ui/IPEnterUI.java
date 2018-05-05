@@ -27,6 +27,8 @@ public class IPEnterUI extends JFrame implements Observer {
 	private JPanel panel;
 	private JTextField textfield;
 	private JButton button;
+	private JTextField textfield2;
+
 
 	public IPEnterUI() {
 		super("IPConfig");
@@ -38,18 +40,23 @@ public class IPEnterUI extends JFrame implements Observer {
 
 	private void initLayout() {
 		panel = new JPanel();
-		panel.setPreferredSize(new Dimension(300, 100));
+		panel.setPreferredSize(new Dimension(300, 150));
 		panel.setLayout(new BorderLayout());
 		label = new JLabel("Set IP");
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		textfield = new JTextField("Enter IP Here");
 		textfield.setHorizontalAlignment(JTextField.CENTER);
+		textfield2 = new JTextField("Enter Port Here");
+		textfield2.setHorizontalAlignment(JTextField.CENTER);
+		JPanel panelText = new JPanel(new BorderLayout());
+		panelText.add(textfield,BorderLayout.CENTER);
+		panelText.add(textfield2,BorderLayout.SOUTH);
 		button = new JButton("Join IP");
 		button.addActionListener(new ActionListener() {		
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					playerClient = new PlayerClient(textfield.getText());
+					playerClient = new PlayerClient(textfield.getText(),Integer.parseInt(textfield2.getText()));
 					MultiplayerUI ui = new MultiplayerUI(playerClient);
 					playerClient.addObserver(ui);
 					close();
@@ -59,7 +66,7 @@ public class IPEnterUI extends JFrame implements Observer {
 			}
 		});
 		panel.add(label, BorderLayout.NORTH);
-		panel.add(textfield, BorderLayout.CENTER);
+		panel.add(panelText, BorderLayout.CENTER);
 		panel.add(button, BorderLayout.SOUTH);
 		this.add(panel);
 		}

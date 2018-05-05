@@ -20,14 +20,18 @@ public class PlayerClient extends Observable {
 	private int rolled;
 	private String roomId;
 	private OnlineGame game;
+	private String ip;
+	private int binding;
 
-	public PlayerClient(String ip) throws IOException {
+	public PlayerClient(String ip,int binding) throws IOException {
 		game = new OnlineGame();
+		this.ip = ip;
+		this.binding = binding;
 		client = new Client();
 		client.getKryo().register(SendData.class);
 		client.addListener(new PlayerClientListener());
 		client.start();
-		client.connect(5000, ip, 22222);
+		client.connect(5000, ip, binding);
 		rolled = 0;
 	}
 
@@ -114,5 +118,15 @@ public class PlayerClient extends Observable {
 	public int getRolled() {
 		return rolled;
 	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public int getBinding() {
+		return binding;
+	}
+	
+	
 
 }

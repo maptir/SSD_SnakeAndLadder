@@ -114,13 +114,20 @@ public class MultiplayerBoard extends JPanel implements Observer {
 		restartButton.setBorderPainted(false);
 		restartButton.setBounds(350, 410, 270, 110);
 		restartButton.addActionListener(new ActionListener() {
-
+			//restart action
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				restart();
-				game.reset();
-				game.setReplayMode(true);
-				replay(game.getHistories().get(historiesIndex));			}
+				frame.dispose();
+				PlayerClient newclient;
+				try {
+					newclient = new PlayerClient(playerClient.getIp(), playerClient.getBinding());
+					MultiplayerUI ui = new MultiplayerUI(newclient);
+					newclient.addObserver(ui);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		});
 		endLabel.add(restartButton);
 		endLabel.setVisible(false);
@@ -186,9 +193,25 @@ public class MultiplayerBoard extends JPanel implements Observer {
 	}
 
 	public void restart() {
-		frame.dispose();
-		MultiplayerUI ui = new MultiplayerUI(playerClient);
-		playerClient.addObserver(ui);
+		int x = 0;
+		int y = 0;
+		historiesIndex = 0;
+		endLabel.setVisible(false);
+		rollButton.setVisible(true);
+		rollButton.setEnabled(true);
+		for (int i = 0; i < players.length; i++) {
+			if (i == 0 || i == 1)
+				x = 50;
+			if (i == 2 || i == 4)
+				x = 18;
+			if (i == 0 || i == 2)
+				y = 630;
+			if (i == 1 || i == 3)
+				y = 600;
+			players[i].setLocation(x, y);
+		}
+		textArea.setText("");
+		dice.setIcon(null);
 	}
 
 	public void replay(Rolled rolled) {
