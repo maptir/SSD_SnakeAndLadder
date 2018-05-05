@@ -65,15 +65,8 @@ public class IndexUI extends JPanel {
 				startButtons[i].addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						PlayerClient playerClient;
-						try {
-							playerClient = new PlayerClient();
-							MultiplayerUI ui = new MultiplayerUI(playerClient);
-							playerClient.addObserver(ui);
-							frame.dispose();
-						} catch (IOException e1) {
-							System.out.println("Not found Server!!!!!");
-						}
+						IPEnterUI ui = new IPEnterUI();
+						frame.dispose();
 					}
 				});
 			} else

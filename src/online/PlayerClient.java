@@ -21,13 +21,13 @@ public class PlayerClient extends Observable {
 	private String roomId;
 	private OnlineGame game;
 
-	public PlayerClient() throws IOException {
+	public PlayerClient(String ip) throws IOException {
 		game = new OnlineGame();
 		client = new Client();
 		client.getKryo().register(SendData.class);
 		client.addListener(new PlayerClientListener());
 		client.start();
-		client.connect(5000, "127.0.0.1", 22222);
+		client.connect(5000, ip, 22222);
 		rolled = 0;
 	}
 
