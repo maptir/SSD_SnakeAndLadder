@@ -33,7 +33,7 @@ import square.SnakeSquare;
 import square.Square;
 
 public class MultiplayerBoard extends JPanel implements Observer {
-	
+
 	private JButton rollButton;
 	private JTextArea textArea;
 	private JLabel dice;
@@ -52,7 +52,7 @@ public class MultiplayerBoard extends JPanel implements Observer {
 	private OnlineGame game;
 	private PlayerClient playerClient;
 
-	public MultiplayerBoard(OnlineGame game,PlayerClient client) {
+	public MultiplayerBoard(OnlineGame game, PlayerClient client) {
 		this.game = game;
 		System.out.println(game.currentPlayerName());
 		this.playerClient = client;
@@ -138,11 +138,12 @@ public class MultiplayerBoard extends JPanel implements Observer {
 				playerClient.sendMessage();
 			}
 		});
-		//Check First Player
-		if(playerClient.getPlayerName().equals(game.currentPlayerName()))
+		// Check First Player
+		if (playerClient.getPlayerName().equals(game.currentPlayerName()))
 			rollButton.setEnabled(true);
-		else rollButton.setEnabled(false);
-		
+		else
+			rollButton.setEnabled(false);
+
 		this.add(rollButton);
 
 		dice = new JLabel();
@@ -197,7 +198,6 @@ public class MultiplayerBoard extends JPanel implements Observer {
 		addPlayerMoveMsg("The die is roll FACE = " + face);
 		if (face > 0 && face <= 6)
 			dice.setIcon(diceImages[face - 1]);
-		System.out.println(currentPlayer + " " + face);
 		movePlayer(face);
 		game.currentPlayerMove(face);
 		addPlayerMoveMsg(currentPlayer + " is at " + (game.currentPlayerPosition() + 1));
@@ -270,34 +270,28 @@ public class MultiplayerBoard extends JPanel implements Observer {
 					} else if (newPos >= boardSize) {
 						// Some player win
 						System.out.println(newPos);
-						if (pos - 1 == boardSize) {
-							System.out.println("WIN");
+						if (pos - 1 == boardSize)
 							return;
-						}
 						addPlayerMoveMsg(
 								curName + " roll a die exceed the goal MOVE BACK for -> " + (newPos - (boardSize - 1)));
 						movePlayerHelper((boardSize - 1) - newPos, boardSize - 1, 2 * (boardSize - 1) - newPos);
-						game.currentPlayerMoveSpecial((boardSize - 1) - newPos);
 					} else {
 						addPlayerMoveMsg("----------------------------------------");
-						System.out.println("SWITCH PLAYER");
 						game.switchPlayer();
-						if(playerClient.getPlayerName().equals(game.currentPlayerName()))
+						if (playerClient.getPlayerName().equals(game.currentPlayerName()))
 							rollButton.setEnabled(true);
-						else rollButton.setEnabled(false);
-						
+						else
+							rollButton.setEnabled(false);
 					}
 					// Replay
 					if (game.isReplayMode()) {
 						rollButton.setEnabled(false);
 						List<Rolled> histories = game.getHistories();
 						if (historiesIndex < histories.size() - 1) {
-							System.out.println("---END REPLAY " + historiesIndex);
 							historiesIndex++;
 							game.switchPlayer();
 							replay(histories.get(historiesIndex));
 						} else {
-							System.out.println("WINNER");
 							replay(histories.get(historiesIndex + 1));
 							playerWin(histories.get(historiesIndex + 1).getPlayer());
 						}
@@ -348,5 +342,5 @@ public class MultiplayerBoard extends JPanel implements Observer {
 		int face = playerClient.getRolled();
 		dieRoll(face, currentPlayer);
 	}
-	
+
 }

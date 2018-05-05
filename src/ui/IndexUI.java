@@ -61,7 +61,7 @@ public class IndexUI extends JPanel {
 			img.setImage(img.getImage().getScaledInstance(287, 92, Image.SCALE_SMOOTH));
 			startButtons[i] = new JButton(img);
 			startButtons[i].setBorderPainted(false);
-			if(i==3) {
+			if (i == 3) {
 				startButtons[i].addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -76,8 +76,8 @@ public class IndexUI extends JPanel {
 						}
 					}
 				});
-			}
-			else startButtons[i].addActionListener(createBoard(i + 2));
+			} else
+				startButtons[i].addActionListener(createBoard(i + 2));
 			startButtons[i].setBounds(0, 0, 287, 92);
 			this.add(startButtons[i]);
 		}

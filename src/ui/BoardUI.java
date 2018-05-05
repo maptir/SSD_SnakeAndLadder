@@ -204,7 +204,6 @@ public class BoardUI extends JPanel {
 		addPlayerMoveMsg("The die is roll FACE = " + face);
 		if (face > 0 && face <= 6)
 			dice.setIcon(diceImages[face - 1]);
-		System.out.println(currentPlayer + " " + face);
 		movePlayer(face);
 		game.currentPlayerMove(face);
 		addPlayerMoveMsg(currentPlayer + " is at " + (game.currentPlayerPosition() + 1));
@@ -228,7 +227,6 @@ public class BoardUI extends JPanel {
 		}
 		int newPos = pos + steps;
 		// Reach Goal
-		System.out.println("POS : " + pos);
 		if (newPos >= boardSize) {
 			// Walk forward to goal and then backward if roll exceed boardSize.
 			movePlayerHelper(boardSize - pos - 1, pos, newPos);
@@ -276,19 +274,14 @@ public class BoardUI extends JPanel {
 						game.currentPlayerMoveSpecial(snakeSquare.goTo() - newPos);
 					} else if (newPos >= boardSize) {
 						// Some player win
-						System.out.println(newPos);
-						if (pos - 1 == boardSize) {
-							System.out.println("WIN");
+						if (pos - 1 == boardSize)
 							return;
-						}
 						addPlayerMoveMsg(
 								curName + " roll a die exceed the goal MOVE BACK for -> " + (newPos - (boardSize - 1)));
 						movePlayerHelper((boardSize - 1) - newPos, boardSize - 1, 2 * (boardSize - 1) - newPos);
-						game.currentPlayerMoveSpecial((boardSize - 1) - newPos);
 					} else {
 						addPlayerMoveMsg("----------------------------------------");
 						rollButton.setEnabled(true);
-						System.out.println("SWITCH PLAYER");
 						game.switchPlayer();
 					}
 					// Replay
@@ -296,12 +289,10 @@ public class BoardUI extends JPanel {
 						rollButton.setEnabled(false);
 						List<Rolled> histories = game.getHistories();
 						if (historiesIndex < histories.size() - 1) {
-							System.out.println("---END REPLAY " + historiesIndex);
 							historiesIndex++;
 							game.switchPlayer();
 							replay(histories.get(historiesIndex));
 						} else {
-							System.out.println("WINNER");
 							replay(histories.get(historiesIndex + 1));
 							playerWin(histories.get(historiesIndex + 1).getPlayer());
 						}

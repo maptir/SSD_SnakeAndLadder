@@ -74,7 +74,7 @@ public class GameServer extends Observable {
 					GameRoom game = findRoomById(receive.roomId);
 					game.addName(receive.playerName);
 					if(game.isFull()) {
-						for(Connection playerConnection : game.getPlayerConnection()) {
+						for (Connection playerConnection : game.getPlayerConnection()) {
 							SendData data = new SendData();
 							data.status = "Ready";
 							playerConnection.sendTCP(data);

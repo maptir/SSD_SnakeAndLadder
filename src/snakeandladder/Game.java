@@ -67,6 +67,7 @@ public class Game {
 	}
 
 	public void currentPlayerMoveSpecial(int steps) {
+		System.out.println("STEP SPECIAL" + steps);
 		this.board.movePiece(currentPlayer().getPiece(), steps);
 	}
 

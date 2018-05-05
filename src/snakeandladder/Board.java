@@ -66,8 +66,11 @@ public class Board {
 		if (squares[pos] instanceof BackwardSquare)
 			steps *= -1;
 		int newPos = pos + steps;
-		if (newPos >= squares.length)
+		System.out.println(pos + " POS : NEW POS " + newPos + " : STEP " + steps);
+		if (newPos >= squares.length) {
 			newPos = 2 * (squares.length - 1) - newPos;
+			System.out.println("EXCEED NEWPOS: " + newPos);
+		}
 		addPiece(piece, newPos);
 	}
 
