@@ -27,7 +27,7 @@ public class PlayerClient extends Observable {
 		client.getKryo().register(SendData.class);
 		client.addListener(new PlayerClientListener());
 		client.start();
-		client.connect(5000, "127.0.0.1", 54333);
+		client.connect(5000, "127.0.0.1", 22222);
 		rolled = 0;
 	}
 

@@ -28,7 +28,7 @@ public class GameServer extends Observable {
 		die = new Die();
 		roomCount = 1;
 		clientConnections = new ArrayList<Connection>();
-		gameServer.bind(54333);
+		gameServer.bind(22222);
 		gameServer.addListener(new GameServerListener());
 		gameServer.getKryo().register(SendData.class);
 		gameServer.start();
