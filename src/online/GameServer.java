@@ -56,10 +56,11 @@ public class GameServer extends Observable {
 		@Override
 		public void disconnected(Connection connection) {
 			super.disconnected(connection);
-			clientConnections.remove(connection);
-			System.out.println("Client Disconnected");
+			GameRoom game = findClientFromRoom(connection);
+			game.getPlayerConnection().remove(connection);
 			setChanged();
-			notifyObservers("Client Disconnected");
+			notifyObservers("Client Disconnected from "+game.getRoomID());
+			
 		}
 
 		@Override
@@ -140,5 +141,15 @@ public class GameServer extends Observable {
 		notifyObservers("Do not find Room with ID = " + id);
 		return null;
 	}
-
+	
+	public GameRoom findClientFromRoom(Connection connection) {
+		for(GameRoom game : gameList) {
+			for(Connection con : game.getPlayerConnection()) {
+				if(connection.equals(con)) {
+					return game;
+				}
+			}
+		}
+		return null;
+	}
 }

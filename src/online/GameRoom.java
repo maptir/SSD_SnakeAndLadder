@@ -10,7 +10,6 @@ import snakeandladder.Game;
 public class GameRoom {
 
 	private String roomID;
-	// private OnlineGame game;
 	private List<Connection> playerConnections;
 	private List<String> nameList;
 
@@ -35,12 +34,6 @@ public class GameRoom {
 		this.roomID = roomID;
 	}
 
-	// public OnlineGame getGame() {
-	// return game;
-	// }
-	// public void setGame(OnlineGame game) {
-	// this.game = game;
-	// }
 	public List<Connection> getPlayerConnection() {
 		return playerConnections;
 	}
