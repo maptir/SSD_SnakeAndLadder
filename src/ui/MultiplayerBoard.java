@@ -102,7 +102,7 @@ public class MultiplayerBoard extends JPanel implements Observer {
 				restart();
 				game.reset();
 				game.setReplayMode(true);
-				replay(game.getHistories().get(historiesIndex));
+				replay(game.getHistories().get(historiesIndex++));
 			}
 		});
 		endLabel.add(replayButton);
@@ -114,7 +114,7 @@ public class MultiplayerBoard extends JPanel implements Observer {
 		restartButton.setBorderPainted(false);
 		restartButton.setBounds(350, 410, 270, 110);
 		restartButton.addActionListener(new ActionListener() {
-			//restart action
+			// restart action
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				frame.dispose();
@@ -124,7 +124,6 @@ public class MultiplayerBoard extends JPanel implements Observer {
 					MultiplayerUI ui = new MultiplayerUI(newclient);
 					newclient.addObserver(ui);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -215,11 +214,11 @@ public class MultiplayerBoard extends JPanel implements Observer {
 	}
 
 	public void replay(Rolled rolled) {
-		System.out.println("START REPLAY -> " + rolled);
 		dieRoll(rolled.getRolled(), rolled.getPlayer());
 	}
 
 	public void dieRoll(int face, Player currentPlayer) {
+		addPlayerMoveMsg("Current Player is " + currentPlayer);
 		addPlayerMoveMsg("The die is roll FACE = " + face);
 		if (face > 0 && face <= 6)
 			dice.setIcon(diceImages[face - 1]);
@@ -294,7 +293,6 @@ public class MultiplayerBoard extends JPanel implements Observer {
 						game.currentPlayerMoveSpecial(snakeSquare.goTo() - newPos);
 					} else if (newPos >= boardSize) {
 						// Some player win
-						System.out.println(newPos);
 						if (pos - 1 == boardSize)
 							return;
 						addPlayerMoveMsg(
@@ -309,17 +307,12 @@ public class MultiplayerBoard extends JPanel implements Observer {
 							rollButton.setEnabled(false);
 					}
 					// Replay
-					if (game.isReplayMode()) {
+					if (game.isReplayMode() && !(curSquare instanceof LadderSquare)
+							&& !(curSquare instanceof SnakeSquare) && newPos < boardSize) {
 						rollButton.setEnabled(false);
 						List<Rolled> histories = game.getHistories();
-						if (historiesIndex < histories.size() - 1) {
-							historiesIndex++;
-							game.switchPlayer();
-							replay(histories.get(historiesIndex));
-						} else {
-							replay(histories.get(historiesIndex + 1));
-							playerWin(histories.get(historiesIndex + 1).getPlayer());
-						}
+						if (historiesIndex < histories.size())
+							replay(histories.get(historiesIndex++));
 						sleep(150);
 					}
 				}
@@ -362,10 +355,7 @@ public class MultiplayerBoard extends JPanel implements Observer {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		Player currentPlayer = game.currentPlayer();
-		addPlayerMoveMsg("Current Player is " + currentPlayer);
-		int face = playerClient.getRolled();
-		dieRoll(face, currentPlayer);
+		dieRoll(playerClient.getRolled(), game.currentPlayer());
 	}
 
 }

@@ -22,7 +22,7 @@ public class GameServer extends Observable {
 	private int roomCount;
 	private Die die;
 
-	public GameServer(ServerUI ui,int binding) throws IOException {
+	public GameServer(ServerUI ui, int binding) throws IOException {
 		gameList = new ArrayList<>();
 		gameServer = new Server();
 		die = new Die();
@@ -45,8 +45,8 @@ public class GameServer extends Observable {
 		public void connected(Connection connection) {
 			super.connected(connection);
 			GameRoom game = findAvailableRoom();
-			game.addConnection(connection);				
-			game.setRoomID(roomCount+"");
+			game.addConnection(connection);
+			game.setRoomID(roomCount + "");
 			SendData data = new SendData();
 			data.roomId = game.getRoomID();
 			data.status = "sendRoomId";
@@ -66,25 +66,25 @@ public class GameServer extends Observable {
 		@Override
 		public void received(Connection connection, Object o) {
 			super.received(connection, o);
-			if(o instanceof SendData) {
-				SendData receive = (SendData)o;
-				if(receive.status.equals("Connecting")){
+			if (o instanceof SendData) {
+				SendData receive = (SendData) o;
+				if (receive.status.equals("Connecting")) {
 					System.out.println(receive.playerName + " Connected to RoomID: " + receive.roomId);
 					setChanged();
 					notifyObservers(receive.playerName + " Connected to RoomID: " + receive.roomId);
 					GameRoom game = findRoomById(receive.roomId);
 					game.addName(receive.playerName);
-					if(game.isFull()) {
+					if (game.isFull()) {
 						for (Connection playerConnection : game.getPlayerConnection()) {
 							SendData data = new SendData();
 							data.status = "Ready";
 							playerConnection.sendTCP(data);
 						}
-					} 
+					}
 				}
-				if(receive.status.equals("RequestName")) {
+				if (receive.status.equals("RequestName")) {
 					GameRoom game = findRoomById(receive.roomId);
-					for(String name : game.getNameList()) {
+					for (String name : game.getNameList()) {
 						SendData data = new SendData();
 						data.playerName = name;
 						data.status = "SendName";
@@ -94,13 +94,13 @@ public class GameServer extends Observable {
 					playRequest.status = "Play";
 					connection.sendTCP(playRequest);
 				}
-				if(receive.status.equals("Roll")) {
+				if (receive.status.equals("Roll")) {
 					GameRoom game = findRoomById(receive.roomId);
 					SendData data = new SendData();
 					die.roll();
 					data.rolled = die.getFace();
 					data.status = "SendRolled";
-					for(Connection con :game.getPlayerConnection()) {
+					for (Connection con : game.getPlayerConnection()) {
 						con.sendTCP(data);
 					}
 				}
@@ -110,17 +110,16 @@ public class GameServer extends Observable {
 	}
 
 	public GameRoom findAvailableRoom() {
-		if(gameList.size()==0) {
+		if (gameList.size() == 0) {
 			System.out.println("No Room Available! Create New One");
 			setChanged();
 			notifyObservers("No Room Available! Create New One");
 			GameRoom room = new GameRoom();
 			gameList.add(room);
 			return room;
-		}
-		else {
-			for(GameRoom room : gameList) {
-				if(room.isFull() == false) {
+		} else {
+			for (GameRoom room : gameList) {
+				if (room.isFull() == false) {
 					return room;
 				}
 			}
@@ -133,13 +132,13 @@ public class GameServer extends Observable {
 	}
 
 	public GameRoom findRoomById(String id) {
-		for(GameRoom game : gameList) {
-			if(game.getRoomID().equals(id))
+		for (GameRoom game : gameList) {
+			if (game.getRoomID().equals(id))
 				return game;
 		}
-		System.out.println("Do not find Room with ID = "+id);
+		System.out.println("Do not find Room with ID = " + id);
 		setChanged();
-		notifyObservers("Do not find Room with ID = "+id);
+		notifyObservers("Do not find Room with ID = " + id);
 		return null;
 	}
 	

@@ -61,13 +61,12 @@ public class Game {
 	}
 
 	public void currentPlayerMove(int steps) {
-		this.board.movePiece(currentPlayer().getPiece(), steps);
+		currentPlayerMoveSpecial(steps);
 		if (!isReplayMode)
 			histories.add(new Rolled(currentPlayer(), steps));
 	}
 
 	public void currentPlayerMoveSpecial(int steps) {
-		System.out.println("STEP SPECIAL" + steps);
 		this.board.movePiece(currentPlayer().getPiece(), steps);
 	}
 

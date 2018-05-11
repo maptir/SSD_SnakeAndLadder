@@ -7,7 +7,7 @@ import square.SnakeSquare;
 import square.Square;
 
 public class Board {
-	public static final int SIZE = 100;
+	public static final int SIZE = 10;
 	private Square[] squares;
 
 	public Board() {
@@ -15,7 +15,8 @@ public class Board {
 		for (int i = 0; i < squares.length; i++)
 			squares[i] = new Square(i);
 
-		initSpecialSquare();
+		// initSpecialSquare();
+		// squares[4] = new LadderSquare(squares[4].getNumber(), 15);
 		squares[squares.length - 1].setGoal(true);
 	}
 
@@ -66,11 +67,8 @@ public class Board {
 		if (squares[pos] instanceof BackwardSquare)
 			steps *= -1;
 		int newPos = pos + steps;
-		System.out.println(pos + " POS : NEW POS " + newPos + " : STEP " + steps);
-		if (newPos >= squares.length) {
+		if (newPos >= squares.length)
 			newPos = 2 * (squares.length - 1) - newPos;
-			System.out.println("EXCEED NEWPOS: " + newPos);
-		}
 		addPiece(piece, newPos);
 	}
 

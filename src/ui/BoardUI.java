@@ -95,7 +95,7 @@ public class BoardUI extends JPanel {
 				restart();
 				game.reset();
 				game.setReplayMode(true);
-				replay(game.getHistories().get(historiesIndex));
+				replay(game.getHistories().get(historiesIndex++));
 			}
 		});
 		endLabel.add(replayButton);
@@ -128,10 +128,7 @@ public class BoardUI extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				rollButton.setEnabled(false);
-				Player currentPlayer = game.currentPlayer();
-				addPlayerMoveMsg("Current Player is " + currentPlayer);
-				int face = game.currentPlayerRollDice();
-				dieRoll(face, currentPlayer);
+				dieRoll(game.currentPlayerRollDice(), game.currentPlayer());
 			}
 		});
 		this.add(rollButton);
@@ -196,11 +193,11 @@ public class BoardUI extends JPanel {
 	}
 
 	public void replay(Rolled rolled) {
-		System.out.println("START REPLAY -> " + rolled);
 		dieRoll(rolled.getRolled(), rolled.getPlayer());
 	}
 
 	public void dieRoll(int face, Player currentPlayer) {
+		addPlayerMoveMsg("Current Player is " + currentPlayer);
 		addPlayerMoveMsg("The die is roll FACE = " + face);
 		if (face > 0 && face <= 6)
 			dice.setIcon(diceImages[face - 1]);
@@ -285,17 +282,12 @@ public class BoardUI extends JPanel {
 						game.switchPlayer();
 					}
 					// Replay
-					if (game.isReplayMode()) {
+					if (game.isReplayMode() && !(curSquare instanceof LadderSquare)
+							&& !(curSquare instanceof SnakeSquare) && newPos < boardSize) {
 						rollButton.setEnabled(false);
 						List<Rolled> histories = game.getHistories();
-						if (historiesIndex < histories.size() - 1) {
-							historiesIndex++;
-							game.switchPlayer();
-							replay(histories.get(historiesIndex));
-						} else {
-							replay(histories.get(historiesIndex + 1));
-							playerWin(histories.get(historiesIndex + 1).getPlayer());
-						}
+						if (historiesIndex < histories.size())
+							replay(histories.get(historiesIndex++));
 						sleep(150);
 					}
 				}
