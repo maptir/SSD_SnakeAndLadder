@@ -16,6 +16,7 @@ public class Board {
 			squares[i] = new Square(i);
 
 		initSpecialSquare();
+		// squares[4] = new LadderSquare(squares[4].getNumber(), 15);
 		squares[squares.length - 1].setGoal(true);
 	}
 
@@ -66,10 +67,10 @@ public class Board {
 		if (squares[pos] instanceof BackwardSquare)
 			steps *= -1;
 		int newPos = pos + steps;
-		System.out.println(pos + " POS : NEW POS " + newPos + " : STEP " + steps);
+		// System.out.println(pos + " POS : NEW POS " + newPos + " : STEP " + steps);
 		if (newPos >= squares.length) {
 			newPos = 2 * (squares.length - 1) - newPos;
-			System.out.println("EXCEED NEWPOS: " + newPos);
+			// System.out.println("EXCEED NEWPOS: " + newPos);
 		}
 		addPiece(piece, newPos);
 	}

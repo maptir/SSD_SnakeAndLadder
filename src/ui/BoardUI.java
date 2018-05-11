@@ -95,7 +95,7 @@ public class BoardUI extends JPanel {
 				restart();
 				game.reset();
 				game.setReplayMode(true);
-				replay(game.getHistories().get(historiesIndex));
+				replay(game.getHistories().get(historiesIndex++));
 			}
 		});
 		endLabel.add(replayButton);
@@ -285,16 +285,15 @@ public class BoardUI extends JPanel {
 						game.switchPlayer();
 					}
 					// Replay
-					if (game.isReplayMode()) {
+					if (game.isReplayMode() && !(curSquare instanceof LadderSquare)
+							&& !(curSquare instanceof SnakeSquare) && newPos < boardSize) {
 						rollButton.setEnabled(false);
 						List<Rolled> histories = game.getHistories();
-						if (historiesIndex < histories.size() - 1) {
-							historiesIndex++;
-							game.switchPlayer();
-							replay(histories.get(historiesIndex));
-						} else {
-							replay(histories.get(historiesIndex + 1));
-							playerWin(histories.get(historiesIndex + 1).getPlayer());
+						if (historiesIndex < histories.size()) {
+							System.out.println(histories.size());
+							System.out.println(histories.get(historiesIndex));
+							replay(histories.get(historiesIndex++));
+							// game.switchPlayer();
 						}
 						sleep(150);
 					}
