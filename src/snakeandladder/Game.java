@@ -62,10 +62,8 @@ public class Game {
 
 	public void currentPlayerMove(int steps) {
 		currentPlayerMoveSpecial(steps);
-		if (!isReplayMode) {
-			histories.add(new Rolled(currentPlayer(), steps));			
-			System.out.println(histories);
-		}
+		if (!isReplayMode)
+			histories.add(new Rolled(currentPlayer(), steps));
 	}
 
 	public void currentPlayerMoveSpecial(int steps) {
