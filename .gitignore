@@ -4,3 +4,5 @@ bin/
 *.swp
 *.project
 *.class
+.DS_Store
+/SnakeUML.ucls
